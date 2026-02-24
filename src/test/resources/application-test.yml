@@ -1,0 +1,39 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
+
+  flyway:
+    enabled: false
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+custom:
+  jwt:
+    access:
+      secret: test-access-secret-key-must-be-at-least-32-characters-long
+      expiration: 1800000
+      cookie-name: access-token
+    refresh:
+      secret: test-refresh-secret-key-must-be-at-least-32-characters-long
+      expiration: 604800000
+      cookie-name: refresh-token
+  cookie:
+    domain: localhost
+    secure: false
+    same-site: Lax
+
+app:
+  cors:
+    allowed-origins:
+    - http://localhost:3000
