@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: backend
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate  # Flyway가 스키마를 관리하므로 create/update 사용 금지
+    open-in-view: false
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: 0
+
+custom:
+  jwt:
+    access:
+      secret: ${JWT_ACCESS_SECRET}
+      expiration: 1800000 # 30분
+      cookie-name: access-token
+    refresh:
+      secret: ${JWT_REFRESH_SECRET}
+      expiration: 604800000 # 7일
+      cookie-name: refresh-token
+  cookie:
+    domain: ${COOKIE_DOMAIN:localhost}
+    secure: ${COOKIE_SECURE:false}
+    same-site: ${COOKIE_SAME_SITE:Lax}
+
+app:
+  cors:
+    allowed-origins:
+    - ${APP_CORS_ALLOWED_ORIGINS:http://localhost:3000}
+springdoc:
+  swagger-ui:
+    disable-swagger-default-url=true
