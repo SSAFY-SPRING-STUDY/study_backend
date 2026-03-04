@@ -4,13 +4,17 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.core.NestedExceptionUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import tools.jackson.databind.exc.InvalidFormatException;
 import lombok.extern.slf4j.Slf4j;
 import ssafy.study.backend.global.exception.CustomException;
 import ssafy.study.backend.global.exception.error.ErrorCode;
@@ -35,7 +39,15 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	public ResponseEntity<ApiResponse<Void>> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
 		ErrorCode errorCode = ErrorCode.DATABASE_ERROR;
-		log.error("DB 제약 조건 위반", e); // DB 스키마 변경 이력 또는 DTO 검증 확인
+		Throwable root = NestedExceptionUtils.getRootCause(e);
+		String message = root != null ? root.getMessage() : e.getMessage();
+
+		log.error("DB 제약 조건 위반", e);
+		if(message.contains("uc_curriculum_orderinstudy")) {
+			log.error("커리큘럼 orderInStudy 제약 조건 위반 감지: ", e);
+			errorCode = ErrorCode.CURRICULUM_ORDER_CONSTRAINT_VIOLATION;
+		}
+
 		return ResponseEntity.status(errorCode.getHttpStatus())
 			.body(ApiResponse.error(errorCode));
 	}
@@ -59,6 +71,38 @@ public class GlobalExceptionHandler {
 			.toList();
 		return ResponseEntity.status(errorCode.getHttpStatus())
 			.body(ApiResponse.error(errorCode, errors));
+	}
+
+	/**
+	 * HttpMessageNotReadableException 처리(잘못된 JSON 형식 또는 타입 불일치)
+	 */
+	@ExceptionHandler(HttpMessageNotReadableException.class)
+	public ResponseEntity<ApiResponse<Void>> handleInvalidFormat(
+		HttpMessageNotReadableException e) {
+
+		Throwable cause = e.getCause();
+
+		ErrorCode errorCode = ErrorCode.INVALID_INPUT_VALUE;
+
+		if (cause instanceof InvalidFormatException ex) {
+			if (ex.getTargetType().isEnum()) {
+				errorCode = ErrorCode.INVALID_ENUM_VALUE;
+			}
+		}
+
+		return ResponseEntity
+			.status(errorCode.getHttpStatus())
+			.body(ApiResponse.error(errorCode));
+	}
+
+	@ExceptionHandler(AuthorizationDeniedException.class)
+	public ResponseEntity<ApiResponse<Void>> handleAuthorizationDeniedException(
+		AuthorizationDeniedException e) {
+
+		ErrorCode errorCode = ErrorCode.FORBIDDEN;
+
+		return ResponseEntity.status(errorCode.getHttpStatus())
+			.body(ApiResponse.error(errorCode));
 	}
 
 	/**
