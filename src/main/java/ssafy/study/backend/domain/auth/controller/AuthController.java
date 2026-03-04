@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import ssafy.study.backend.domain.auth.controller.dto.LoginRequest;
 import ssafy.study.backend.domain.auth.service.AuthService;
 import ssafy.study.backend.domain.auth.service.dto.AuthResult;
+import ssafy.study.backend.domain.member.controller.dto.response.MemberInfo;
 import ssafy.study.backend.global.cookie.CookieService;
 import ssafy.study.backend.global.exception.CustomException;
 import ssafy.study.backend.global.exception.error.ErrorCode;
@@ -36,7 +37,7 @@ public class AuthController {
 	@PostMapping(value = "/login", consumes = "application/json")
 	@Operation(summary = "로그인", description = "이메일과 비밀번호로 로그인합니다.")
 	@ResponseStatus(HttpStatus.OK)
-	public ApiResponse<Void> login(
+	public ApiResponse<MemberInfo> login(
 		@Valid @RequestBody LoginRequest request,
 		HttpServletResponse response
 	) {
@@ -45,7 +46,9 @@ public class AuthController {
 		cookieService.setAccessToken(response, result.accessToken());
 		cookieService.setRefreshToken(response, result.refreshToken());
 
-		return ApiResponse.success("로그인이 성공적으로 완료되었습니다.");
+		MemberInfo memberInfo =  result.memberInfo();
+
+		return ApiResponse.success("로그인이 성공적으로 완료되었습니다.", memberInfo);
 	}
 
 	/**

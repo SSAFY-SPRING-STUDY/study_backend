@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import ssafy.study.backend.domain.auth.controller.dto.LoginRequest;
 import ssafy.study.backend.domain.auth.repository.RefreshTokenRepository;
 import ssafy.study.backend.domain.auth.service.dto.AuthResult;
+import ssafy.study.backend.domain.member.controller.dto.response.MemberInfo;
 import ssafy.study.backend.domain.member.entity.Member;
 import ssafy.study.backend.domain.member.entity.MemberRole;
 import ssafy.study.backend.domain.member.repository.MemberRepository;
@@ -44,7 +45,7 @@ public class AuthService {
 
 		refreshTokenRepository.save(member.getId(), refreshToken);
 
-		return new AuthResult(accessToken, refreshToken);
+		return new AuthResult(MemberInfo.fromEntity(member), accessToken, refreshToken);
 	}
 
 	/* =========================
@@ -67,7 +68,7 @@ public class AuthService {
 
 		refreshTokenRepository.save(memberId, newRefreshToken);
 
-		return new AuthResult(newAccessToken, newRefreshToken);
+		return new AuthResult(null, newAccessToken, newRefreshToken);
 	}
 
 	/* =========================
