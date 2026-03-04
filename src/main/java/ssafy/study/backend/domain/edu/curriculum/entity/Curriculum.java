@@ -1,22 +1,24 @@
-package ssafy.study.backend.domain.study.curriculum.entity;
+package ssafy.study.backend.domain.edu.curriculum.entity;
 
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import ssafy.study.backend.domain.study.post.entity.Post;
+import ssafy.study.backend.domain.edu.post.entity.Post;
+import ssafy.study.backend.domain.edu.study.entity.Study;
 
 @Getter
 @Entity
@@ -25,10 +27,6 @@ public class Curriculum {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-
-	@Column(nullable = false)
-	@Enumerated(EnumType.STRING)
-	private DifficultyLevel level; // BASIC, INTERMEDIATE, ADVANCED
 
 	@Column(nullable = false)
 	private String name; // 커리큘럼 이름
@@ -45,15 +43,19 @@ public class Curriculum {
 	@Version
 	private Long version; // 낙관적 락을 위한 버전 필드
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(nullable = false)
+	private Study study; // 이 커리큘럼이 속한 스터디
+
 	@OneToMany(mappedBy = "curriculum", cascade = CascadeType.ALL)
 	private List<Post> posts; // 이 커리큘럼에 속한 글
 
 	@Builder
-	private Curriculum(DifficultyLevel level, String name, String description, int orderInStudy) {
-		this.level = level;
+	private Curriculum(String name, String description, int orderInStudy, Study study) {
 		this.name = name;
 		this.description = description;
 		this.orderInStudy = orderInStudy;
+		this.study = study;
 		this.postsCount = 0;
 	}
 

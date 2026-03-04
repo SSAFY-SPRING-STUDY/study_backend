@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 import ssafy.study.backend.domain.edu.study.entity.DifficultyLevel;
 import ssafy.study.backend.domain.edu.study.entity.StudyType;
 
-public record StudyCreateRequest(
+public record StudyRequest(
 
 	@NotBlank(message = "스터디 이름은 필수입니다.")
 	@Size(max = 100, message = "스터디 이름은 100자 이하이어야 합니다.")

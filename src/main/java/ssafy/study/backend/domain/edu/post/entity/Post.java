@@ -1,4 +1,4 @@
-package ssafy.study.backend.domain.study.post.entity;
+package ssafy.study.backend.domain.edu.post.entity;
 
 import java.time.LocalDateTime;
 
@@ -20,8 +20,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import ssafy.study.backend.domain.edu.curriculum.entity.Curriculum;
 import ssafy.study.backend.domain.member.entity.Member;
-import ssafy.study.backend.domain.study.curriculum.entity.Curriculum;
 
 @Getter
 @Entity
@@ -44,7 +44,7 @@ public class Post {
 
 	/** 작성자 */
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "author_id")
+	@JoinColumn(nullable = false)
 	private Member author;
 
 	/** 커리큘럼 내 순서 */
@@ -53,7 +53,7 @@ public class Post {
 
 	/** 속한 커리큘럼 */
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "curriculum_id")
+	@JoinColumn(nullable = false)
 	private Curriculum curriculum;
 
 	/** 생성일시 */
@@ -81,10 +81,7 @@ public class Post {
 		this.content = content;
 	}
 
-	public boolean isAuthor(Long memberId) {
-		return this.author.getId().equals(memberId);
+	public boolean isNotAuthor(Long authorId) {
+		return this.author.getId().equals(authorId);
 	}
-
-
-
 }

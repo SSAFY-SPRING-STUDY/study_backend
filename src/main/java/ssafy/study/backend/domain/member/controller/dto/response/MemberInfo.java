@@ -4,7 +4,7 @@ import ssafy.study.backend.domain.member.entity.Member;
 import ssafy.study.backend.domain.member.entity.MemberLevel;
 import ssafy.study.backend.domain.member.entity.MemberRole;
 
-public record MemberDetailInfo(
+public record MemberInfo(
 	Long id,
 	String email,
 	String name,
@@ -12,8 +12,8 @@ public record MemberDetailInfo(
 	MemberLevel level,
 	MemberRole role
 ) {
-	public static MemberDetailInfo fromEntity(Member member) {
-		return new MemberDetailInfo(
+	public static MemberInfo fromEntity(Member member) {
+		return new MemberInfo(
 			member.getId(),
 			member.getEmail(),
 			member.getName(),
