@@ -1,6 +1,6 @@
-package ssafy.study.backend.domain.study.post.controller.dto.response;
+package ssafy.study.backend.domain.edu.post.controller.dto.response;
 
-import ssafy.study.backend.domain.study.post.entity.Post;
+import ssafy.study.backend.domain.edu.post.entity.Post;
 
 public record PostDetailResponse(
 	Long postId,

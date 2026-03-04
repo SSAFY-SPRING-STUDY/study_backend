@@ -1,4 +1,4 @@
-package ssafy.study.backend.domain.study.post.controller;
+package ssafy.study.backend.domain.edu.post.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,10 +17,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import ssafy.study.backend.domain.study.post.controller.dto.request.PostCreateRequest;
-import ssafy.study.backend.domain.study.post.controller.dto.response.PostDetailResponse;
-import ssafy.study.backend.domain.study.post.controller.dto.response.PostSimpleResponse;
-import ssafy.study.backend.domain.study.post.service.PostService;
+import ssafy.study.backend.domain.edu.post.controller.dto.request.PostCreateRequest;
+import ssafy.study.backend.domain.edu.post.controller.dto.response.PostDetailResponse;
+import ssafy.study.backend.domain.edu.post.controller.dto.response.PostSimpleResponse;
+import ssafy.study.backend.domain.edu.post.service.PostService;
 import ssafy.study.backend.global.response.ApiResponse;
 
 @RestController

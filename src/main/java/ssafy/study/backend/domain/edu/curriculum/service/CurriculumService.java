@@ -1,17 +1,16 @@
-package ssafy.study.backend.domain.study.curriculum.service;
-
-import java.util.List;
+package ssafy.study.backend.domain.edu.curriculum.service;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import ssafy.study.backend.domain.study.curriculum.controller.dto.CurriculumRequest;
-import ssafy.study.backend.domain.study.curriculum.controller.dto.CurriculumResponse;
-import ssafy.study.backend.domain.study.curriculum.entity.Curriculum;
-import ssafy.study.backend.domain.study.curriculum.entity.DifficultyLevel;
-import ssafy.study.backend.domain.study.curriculum.repository.CurriculumRepository;
+import ssafy.study.backend.domain.edu.curriculum.controller.dto.CurriculumRequest;
+import ssafy.study.backend.domain.edu.curriculum.controller.dto.CurriculumResponse;
+import ssafy.study.backend.domain.edu.curriculum.entity.Curriculum;
+import ssafy.study.backend.domain.edu.curriculum.repository.CurriculumRepository;
+import ssafy.study.backend.domain.edu.study.entity.Study;
+import ssafy.study.backend.domain.edu.study.repository.StudyRepository;
 import ssafy.study.backend.global.exception.CustomException;
 import ssafy.study.backend.global.exception.error.ErrorCode;
 
@@ -20,12 +19,15 @@ import ssafy.study.backend.global.exception.error.ErrorCode;
 @RequiredArgsConstructor
 public class CurriculumService {
 	private final CurriculumRepository curriculumRepository;
+	private final StudyRepository studyRepository;
 
 	@Transactional
-	public CurriculumResponse createCurriculums(CurriculumRequest request) {
+	public CurriculumResponse createCurriculums(Long studyId, CurriculumRequest request) {
+		Study study = studyRepository.findById(studyId).orElseThrow(() -> new CustomException(ErrorCode.STUDY_NOT_FOUND));
+
 		Curriculum curriculum = Curriculum.builder()
-			.level(request.level())
 			.name(request.name())
+			.study(study)
 			.description(request.description())
 			.orderInStudy(request.order())
 			.build();
@@ -60,9 +62,9 @@ public class CurriculumService {
 		return CurriculumResponse.from(curriculum);
 	}
 
-	public List<CurriculumResponse> getCurriculumsByLevel(DifficultyLevel level) {
-		List<CurriculumResponse> curriculums = curriculumRepository.findByLevel(level).stream()
-			.map(CurriculumResponse::from)
-			.toList();
-	}
+	// public List<CurriculumResponse> getCurriculumsByLevel(DifficultyLevel level) {
+	// 	List<CurriculumResponse> curriculums = curriculumRepository.findByLevel(level).stream()
+	// 		.map(CurriculumResponse::from)
+	// 		.toList();
+	// }
 }

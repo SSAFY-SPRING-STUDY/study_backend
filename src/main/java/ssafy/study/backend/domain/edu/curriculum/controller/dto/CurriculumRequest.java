@@ -1,11 +1,8 @@
-package ssafy.study.backend.domain.study.curriculum.controller.dto;
-
-import ssafy.study.backend.domain.study.curriculum.entity.DifficultyLevel;
+package ssafy.study.backend.domain.edu.curriculum.controller.dto;
 
 public record CurriculumRequest(
 	String name,
 	String description,
-	Integer order,
-	DifficultyLevel level
+	Integer order
 ) {
 }

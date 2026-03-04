@@ -1,4 +1,4 @@
-package ssafy.study.backend.domain.study.curriculum.entity;
+package ssafy.study.backend.domain.edu.study.entity;
 
 public enum DifficultyLevel {
 	BASIC,

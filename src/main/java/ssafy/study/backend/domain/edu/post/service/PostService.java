@@ -1,4 +1,4 @@
-package ssafy.study.backend.domain.study.post.service;
+package ssafy.study.backend.domain.edu.post.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -6,13 +6,13 @@ import org.springframework.transaction.annotation.Transactional;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import ssafy.study.backend.domain.member.entity.Member;
-import ssafy.study.backend.domain.study.curriculum.entity.Curriculum;
-import ssafy.study.backend.domain.study.curriculum.repository.CurriculumRepository;
-import ssafy.study.backend.domain.study.post.controller.dto.request.PostCreateRequest;
-import ssafy.study.backend.domain.study.post.controller.dto.response.PostDetailResponse;
-import ssafy.study.backend.domain.study.post.controller.dto.response.PostSimpleResponse;
-import ssafy.study.backend.domain.study.post.entity.Post;
-import ssafy.study.backend.domain.study.post.repository.PostRepository;
+import ssafy.study.backend.domain.edu.curriculum.entity.Curriculum;
+import ssafy.study.backend.domain.edu.curriculum.repository.CurriculumRepository;
+import ssafy.study.backend.domain.edu.post.controller.dto.request.PostCreateRequest;
+import ssafy.study.backend.domain.edu.post.controller.dto.response.PostDetailResponse;
+import ssafy.study.backend.domain.edu.post.controller.dto.response.PostSimpleResponse;
+import ssafy.study.backend.domain.edu.post.entity.Post;
+import ssafy.study.backend.domain.edu.post.repository.PostRepository;
 import ssafy.study.backend.global.exception.CustomException;
 import ssafy.study.backend.global.exception.error.ErrorCode;
 
@@ -54,7 +54,7 @@ public class PostService {
 		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
 
-		if(!post.isAuthor(authorId)) {
+		if(post.isNotAuthor(authorId)) {
 			throw new CustomException(ErrorCode.POST_ACCESS_DENIED);
 		}
 
@@ -67,7 +67,7 @@ public class PostService {
 		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
 
-		if(!post.isAuthor(authorId)) {
+		if(post.isNotAuthor(authorId)) {
 			throw new CustomException(ErrorCode.POST_ACCESS_DENIED);
 		}
 

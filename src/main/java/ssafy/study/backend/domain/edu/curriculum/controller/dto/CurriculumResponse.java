@@ -1,6 +1,6 @@
-package ssafy.study.backend.domain.study.curriculum.controller.dto;
+package ssafy.study.backend.domain.edu.curriculum.controller.dto;
 
-import ssafy.study.backend.domain.study.curriculum.entity.Curriculum;
+import ssafy.study.backend.domain.edu.curriculum.entity.Curriculum;
 
 public record CurriculumResponse (
 	Long id,
