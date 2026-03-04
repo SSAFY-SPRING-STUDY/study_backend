@@ -1,0 +1,23 @@
+ALTER TABLE post
+    MODIFY author_id BIGINT NOT NULL;
+
+ALTER TABLE post
+    MODIFY curriculum_id BIGINT NOT NULL;
+
+ALTER TABLE member
+    MODIFY email VARCHAR(255) NOT NULL;
+
+ALTER TABLE member
+    MODIFY level VARCHAR(255) NOT NULL;
+
+ALTER TABLE member
+    MODIFY name VARCHAR(255) NOT NULL;
+
+ALTER TABLE member
+    MODIFY nickname VARCHAR(255) NOT NULL;
+
+ALTER TABLE member
+    MODIFY `role` VARCHAR(255) NOT NULL;
+
+ALTER TABLE curriculum
+    MODIFY study_id BIGINT NOT NULL;
