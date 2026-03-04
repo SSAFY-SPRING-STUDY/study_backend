@@ -11,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Entity
@@ -20,15 +21,18 @@ public class Member {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@Setter
 	@Column(nullable = false)
 	private String name;
 
 	@Column(nullable = false, unique = true)
 	private String email;
 
+	@Setter
 	@Column(nullable = false, unique = true)
 	private String nickname;
 
+	@Setter
 	@Column(nullable = false)
 	private String password;
 
