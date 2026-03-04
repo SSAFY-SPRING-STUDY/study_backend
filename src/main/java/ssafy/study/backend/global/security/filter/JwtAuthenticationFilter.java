@@ -43,7 +43,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 				Long memberId = Long.valueOf(claims.getSubject());
 				String role = claims.get("role", String.class);
-
 				setAuthentication(memberId, role);
 
 			} catch (CustomException e) {
