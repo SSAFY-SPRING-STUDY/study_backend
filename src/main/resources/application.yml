@@ -33,6 +33,9 @@ custom:
     domain: ${COOKIE_DOMAIN:localhost}
     secure: ${COOKIE_SECURE:false}
     same-site: ${COOKIE_SAME_SITE:Lax}
+  aws:
+    bucket: ${BUCKET_NAME}
+    region: ${REGION}
 
 app:
   cors:
