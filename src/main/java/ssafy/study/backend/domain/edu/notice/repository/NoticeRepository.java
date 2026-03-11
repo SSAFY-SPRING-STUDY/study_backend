@@ -1,4 +1,8 @@
 package ssafy.study.backend.domain.edu.notice.repository;
 
-public interface NoticeRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import ssafy.study.backend.domain.edu.notice.entity.Notice;
+
+public interface NoticeRepository extends JpaRepository<Notice, Long> {
 }
