@@ -4,6 +4,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+
+import jakarta.servlet.DispatcherType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -44,6 +46,9 @@ public class SecurityConfig {
 
 			.authorizeHttpRequests(
 				authorize -> authorize
+					.dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()
+					.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
 					// Swagger 관련 URL 접근 허용
 					.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**",
 						"/swagger-ui.html").permitAll()
@@ -54,6 +59,7 @@ public class SecurityConfig {
 					// MEMBER Domain
 					.requestMatchers(HttpMethod.POST, "/api/v1/members/signup").permitAll()
 
+					// AUTH Domain
 					.requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
 					.requestMatchers(HttpMethod.POST, "/api/v1/auth/refresh").permitAll()
 					.requestMatchers(HttpMethod.POST, "/api/v1/auth/logout").permitAll()
