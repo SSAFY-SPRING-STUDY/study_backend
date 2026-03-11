@@ -1,4 +1,6 @@
 package ssafy.study.backend.domain.notification.event;
 
-public record NotificationCreatedEvent() {
+import ssafy.study.backend.domain.notification.entity.Notification;
+
+public record NotificationCreatedEvent(Notification notification) {
 }
