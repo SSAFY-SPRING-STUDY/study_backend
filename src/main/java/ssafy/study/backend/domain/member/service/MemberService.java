@@ -18,12 +18,13 @@ import ssafy.study.backend.global.exception.error.ErrorCode;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class MemberService {
 
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
 
+	@Transactional
 	public void signup(SignupRequest request) {
 		if (memberRepository.existsByEmail(request.email())) {
 			throw new CustomException(ErrorCode.EMAIL_DUPLICATE);
@@ -51,6 +52,7 @@ public class MemberService {
 		return MemberInfo.fromEntity(member);
 	}
 
+	@Transactional
 	public MemberInfo updateInfo(Long requesterId,MemberUpdateRequest request) {
 		Member member = memberRepository.findById(requesterId)
 			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
@@ -70,9 +72,15 @@ public class MemberService {
 
 	}
 
+	@Transactional
 	public void updatePassword(Long requesterId, PasswordUpdateRequest request) {
 		Member member = memberRepository.findById(requesterId)
 			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+		// 1. 기존 비밀번호가 맞는지 확인
+		if (!passwordEncoder.matches(request.currentPassword(), member.getPassword())) {
+			throw new CustomException(ErrorCode.INVALID_PASSWORD);
+		}
 
 		if (passwordEncoder.matches(request.newPassword(), member.getPassword())) {
 			throw new CustomException(ErrorCode.SAME_AS_OLD_PASSWORD);
