@@ -7,13 +7,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import ssafy.study.backend.domain.edu.comment.entity.Comment;
+import ssafy.study.backend.domain.edu.comment.entity.ReComment;
 
-public interface CommentRepository extends JpaRepository<Comment, Long> {
+public interface ReCommentRepository extends JpaRepository<ReComment, Long> {
 
 	@EntityGraph(attributePaths = {"author"})
-	Optional<Comment> findCommentById(Long id);
+	Optional<ReComment> findReCommentById(Long id);
 
-	@EntityGraph(attributePaths = {"author", "post"})
-	Page<Comment> findByPostId(Long postId, Pageable pageable);
+	@EntityGraph(attributePaths = {"author"})
+	Page<ReComment> findByCommentId(Long commentId, Pageable pageable);
 }
