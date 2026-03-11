@@ -21,7 +21,6 @@ import ssafy.study.backend.global.exception.error.ErrorCode;
 @Component
 @RequiredArgsConstructor
 public class JwtProvider {
-
 	private final JwtProperties jwtProperties;
 
     /* =======================
