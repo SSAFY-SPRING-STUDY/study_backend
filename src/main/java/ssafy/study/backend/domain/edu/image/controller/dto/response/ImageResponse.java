@@ -1,6 +1,6 @@
 package ssafy.study.backend.domain.edu.image.controller.dto.response;
 
-public record ImageResonse(
+public record ImageResponse(
 	String imageUrl,
 	String imageKey
 ) {
