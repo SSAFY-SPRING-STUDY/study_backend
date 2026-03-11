@@ -33,6 +33,11 @@ custom:
     secure: false
     same-site: Lax
 
+  aws:
+    bucket: test-bucket
+    region: ap-northeast-2
+
+
 app:
   cors:
     allowed-origins:

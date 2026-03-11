@@ -57,6 +57,10 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // === AWS ===
+    implementation(platform("software.amazon.awssdk:bom:2.42.5"))
+    implementation("software.amazon.awssdk:s3")
 }
 
 tasks.named('test') {
