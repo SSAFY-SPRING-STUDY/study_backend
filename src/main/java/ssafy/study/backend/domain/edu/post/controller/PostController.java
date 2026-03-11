@@ -1,5 +1,7 @@
 package ssafy.study.backend.domain.edu.post.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,7 +19,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import ssafy.study.backend.domain.edu.post.controller.dto.request.PostCreateRequest;
+import ssafy.study.backend.domain.edu.post.controller.dto.request.PostRequest;
 import ssafy.study.backend.domain.edu.post.controller.dto.response.PostDetailResponse;
 import ssafy.study.backend.domain.edu.post.controller.dto.response.PostSimpleResponse;
 import ssafy.study.backend.domain.edu.post.service.PostService;
@@ -30,13 +32,21 @@ import ssafy.study.backend.global.response.ApiResponse;
 public class PostController {
 	private final PostService postService;
 
+	@GetMapping("/curriculums/{curriculumId}/posts")
+	@Operation(summary = "커리큘럼별 게시글 목록 조회", description = "특정 커리큘럼의 게시글 목록을 순서대로 조회합니다.")
+	@ResponseStatus(HttpStatus.OK)
+	public ApiResponse<List<PostSimpleResponse>> listByCurriculum(@PathVariable Long curriculumId) {
+		List<PostSimpleResponse> result = postService.getPostsByCurriculum(curriculumId);
+		return ApiResponse.success("게시글 목록이 성공적으로 조회되었습니다.", result);
+	}
+
 	@PostMapping("/curriculums/{curriculumId}/posts")
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "게시글 생성", description = "새로운 게시글을 생성합니다.")
 	@ResponseStatus(HttpStatus.CREATED)
 	public ApiResponse<PostSimpleResponse> create(
 		@AuthenticationPrincipal Long authorId,
-		@PathVariable Long curriculumId, @Valid @RequestBody PostCreateRequest request) {
+		@PathVariable Long curriculumId, @Valid @RequestBody PostRequest request) {
 
 		PostSimpleResponse response = postService.createPost(authorId, curriculumId, request);
 
@@ -58,7 +68,7 @@ public class PostController {
 	public ApiResponse<PostSimpleResponse> update(
 		@AuthenticationPrincipal Long authorId,
 		@PathVariable Long postId,
-		@Valid @RequestBody PostCreateRequest request
+		@Valid @RequestBody PostRequest request
 	) {
 		PostSimpleResponse response = postService.updatePost(authorId, postId, request);
 		return ApiResponse.success("게시글이 성공적으로 수정되었습니다.", response);

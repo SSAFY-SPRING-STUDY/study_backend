@@ -17,7 +17,7 @@ public record PostSimpleResponse(
 			savedPost.getAuthor().getId(),
 			savedPost.getAuthor().getName(),
 			savedPost.getCurriculum().getId(),
-			savedPost.getCurriculum().getOrderInStudy()
+			savedPost.getOrderInCurriculum()
 		);
 	}
 }

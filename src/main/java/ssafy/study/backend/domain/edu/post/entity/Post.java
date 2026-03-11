@@ -81,7 +81,7 @@ public class Post {
 		this.content = content;
 	}
 
-	public boolean isNotAuthor(Long authorId) {
+	public boolean isAuthor(Long authorId) {
 		return this.author.getId().equals(authorId);
 	}
 }
