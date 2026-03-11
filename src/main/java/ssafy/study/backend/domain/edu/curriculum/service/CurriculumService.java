@@ -1,6 +1,8 @@
 package ssafy.study.backend.domain.edu.curriculum.service;
 
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,6 +62,14 @@ public class CurriculumService {
 
 		curriculum.update(request.name(), request.description(), request.order());
 		return CurriculumResponse.from(curriculum);
+	}
+
+	public Page<CurriculumResponse> getCurriculumsByStudy(Long studyId, Pageable pageable) {
+		if (!studyRepository.existsById(studyId)) {
+			throw new CustomException(ErrorCode.STUDY_NOT_FOUND);
+		}
+		return curriculumRepository.findByStudyId(studyId, pageable)
+			.map(CurriculumResponse::from);
 	}
 
 	// public List<CurriculumResponse> getCurriculumsByLevel(DifficultyLevel level) {

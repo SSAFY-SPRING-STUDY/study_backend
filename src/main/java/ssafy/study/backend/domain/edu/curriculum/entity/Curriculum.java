@@ -20,6 +20,7 @@ import lombok.NoArgsConstructor;
 import ssafy.study.backend.domain.edu.post.entity.Post;
 import ssafy.study.backend.domain.edu.study.entity.Study;
 
+
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -34,7 +35,7 @@ public class Curriculum {
 	@Column(nullable = false)
 	private String description; // 커리큘럼 설명
 
-	@Column(nullable = false, unique = true)
+	@Column(nullable = false)
 	private int orderInStudy; // 스터디 내에서의 순서
 
 	@Column(nullable = false)
@@ -63,5 +64,10 @@ public class Curriculum {
 		this.name = name;
 		this.description = description;
 		this.orderInStudy = order;
+	}
+
+	public int incrementPostsCount() {
+		this.postsCount++;
+		return this.postsCount;
 	}
 }
