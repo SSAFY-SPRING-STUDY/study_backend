@@ -1,0 +1,49 @@
+name: CD - Release Deploy
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  TAG: ${{ github.sha }}
+  IMAGE_NAME: ${{ vars.PROJECT_NAME }}-app
+  OWNER_LC: ${{ github.repository_owner }}
+
+jobs:
+  deploy:
+    name: EC2 Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: OWNER 소문자 변환
+        run: |
+          echo "OWNER_LC=$(echo '${{ env.OWNER_LC }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      - name: AWS 로그인 (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ vars.AWS_ROLE_NAME }}
+          aws-region: ap-northeast-2
+
+      - name: deploy.sh 실행 (SSM)
+        run: |
+          COMMAND_ID=$(aws ssm send-command \
+            --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
+            --document-name "AWS-RunShellScript" \
+            --region ap-northeast-2 \
+            --parameters commands="[\"bash /home/app/deploy.sh ghcr.io/$OWNER_LC/$IMAGE_NAME:latest\"]" \
+            --query "Command.CommandId" \
+            --output text)
+          aws ssm wait command-executed \
+            --command-id "$COMMAND_ID" \
+            --instance-id "${{ secrets.EC2_INSTANCE_ID }}" \
+            --region ap-northeast-2
+
+          aws ssm get-command-invocation \
+            --command-id "$COMMAND_ID" \
+            --instance-id "${{ secrets.EC2_INSTANCE_ID }}" \
+            --region ap-northeast-2
+
