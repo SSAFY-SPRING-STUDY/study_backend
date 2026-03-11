@@ -1,14 +1,11 @@
 package ssafy.study.backend.domain.edu.comment.entity;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -18,28 +15,23 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import ssafy.study.backend.domain.edu.post.entity.Post;
 import ssafy.study.backend.domain.member.entity.Member;
 
 @Getter
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Comment {
+public class ReComment {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@Column(nullable = false)
 	private String content;
-
-	@Column(nullable = false)
-	private Long reCommentCount;
 
 	@CreatedDate
 	@Column(nullable = false)
@@ -51,40 +43,28 @@ public class Comment {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)
-	private Post post;
+	private Comment comment;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)
 	private Member author;
 
-	@OneToMany(mappedBy = "comment", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<ReComment> reComments = new ArrayList<>();
-
 	@Builder
-	private Comment(String content, Member author, Post post) {
+	private ReComment(String content, Member author, Comment comment) {
 		this.content = content;
-		this.post = post;
+		this.comment = comment;
 		this.author = author;
-		this.reCommentCount = 0L;
 	}
 
-	public static Comment create(String content, Member author, Post post) {
-		return Comment.builder()
+	public static ReComment create(String content, Member author, Comment comment) {
+		return ReComment.builder()
 			.content(content)
-			.post(post)
 			.author(author)
+			.comment(comment)
 			.build();
 	}
 
 	public void updateContent(String content) {
 		this.content = content;
-	}
-
-	public void incrementReCommentCount() {
-		this.reCommentCount++;
-	}
-
-	public void decrementReCommentCount() {
-		this.reCommentCount = Math.max(0, this.reCommentCount - 1);
 	}
 }
