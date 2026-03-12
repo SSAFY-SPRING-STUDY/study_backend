@@ -34,7 +34,7 @@ jobs:
             --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
             --document-name "AWS-RunShellScript" \
             --region ap-northeast-2 \
-            --parameters commands="[\"bash /home/app/deploy.sh ghcr.io/$OWNER_LC/$IMAGE_NAME:latest\"]" \
+            --parameters commands="[\"bash ~/app/deploy.sh ghcr.io/$OWNER_LC/$IMAGE_NAME:latest\"]" \
             --query "Command.CommandId" \
             --output text)
           aws ssm wait command-executed \
