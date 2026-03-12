@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 env:
-  IMAGE_NAME: ${{ vars.PROJECT_NAME }}-app
+  IMAGE_NAME: ${{ github.event.repository.name }}
   OWNER_LC: ${{ github.repository_owner }}
 
 jobs:
