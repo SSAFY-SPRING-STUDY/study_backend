@@ -22,47 +22,42 @@ import ssafy.study.backend.global.exception.error.ErrorCode;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ImageService {
+
 	private final S3Service s3Service;
 	private final EntityManager entityManager;
 	private final PostRepository postRepository;
 	private final ImageRepository imageRepository;
 
 	@Transactional
-	public ImageResponse getImageUploadUrl(Long postId, ImageRequest request) {
-		// S3에 업로드할 파일의 메타데이터 생성
-		String key = generateKey(postId, request.fileName());
-
-		Post post = entityManager.getReference(Post.class, postId);
-
-		Image image = Image.create(post, key);
-
+	public ImageResponse getImageUploadUrl(ImageRequest request) {
+		String key = generateKey(request.fileName());
+		Image image = Image.createPending(key);
 		imageRepository.save(image);
-
-		// S3에서 presigned URL 생성
 		String preSignedUrl = s3Service.getUploadPresignedUrl(key, request.contentType(), request.contentLength());
-
-		return new ImageResponse(preSignedUrl, key);
+		return new ImageResponse(image.getId(), preSignedUrl, key);
 	}
-	public ImageResponse getImageDownloadUrl(Long imageId) {
+
+	@Transactional
+	public void attachImagesToPost(Long postId, List<Long> imageIds) {
+		if (imageIds == null || imageIds.isEmpty()) return;
+		Post post = entityManager.getReference(Post.class, postId);
+		List<Image> images = imageRepository.findByIdsAndPostIsNull(imageIds);
+		images.forEach(image -> image.attachTo(post));
+	}
+
+	/** GET /images/{imageId} 리다이렉트용 presigned URL 반환 (유효시간 60분) */
+	public String getImageRedirectUrl(Long imageId) {
 		Image image = imageRepository.findById(imageId)
 			.orElseThrow(() -> new CustomException(ErrorCode.IMAGE_NOT_FOUND));
-
-		String preSignedUrl = s3Service.getDownloadPresignedUrl(image.getKey());
-
-		return new ImageResponse(preSignedUrl, image.getKey());
+		return s3Service.getDownloadPresignedUrl(image.getKey());
 	}
 
 	public List<ImageResponse> getImagesByPost(Long postId) {
 		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
 
-		List<Image> images = imageRepository.findByPost(post);
-
-		return images.stream()
-			.map(image -> {
-				String preSignedUrl = s3Service.getDownloadPresignedUrl(image.getKey());
-				return new ImageResponse(preSignedUrl, image.getKey());
-			})
+		return imageRepository.findByPost(post).stream()
+			.map(image -> new ImageResponse(image.getId(), "/api/v1/images/" + image.getId(), image.getKey()))
 			.toList();
 	}
 
@@ -70,16 +65,10 @@ public class ImageService {
 	public void completeImageUpload(Long imageId) {
 		Image image = imageRepository.findById(imageId)
 			.orElseThrow(() -> new CustomException(ErrorCode.IMAGE_NOT_FOUND));
-
 		image.markAsUploaded();
 	}
 
-
-	private String generateKey(Long postId, String fileName) {
-		return String.format("posts/%d/%s_%s",
-			postId,
-			UUID.randomUUID(),
-			fileName);
+	private String generateKey(String fileName) {
+		return String.format("images/%s_%s", UUID.randomUUID(), fileName);
 	}
-
 }

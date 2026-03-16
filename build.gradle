@@ -22,6 +22,7 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven { url 'https://repo.spring.io/milestone' }
 }
 
 dependencies {
@@ -61,7 +62,9 @@ dependencies {
     // === AWS ===
     implementation(platform("software.amazon.awssdk:bom:2.42.5"))
     implementation("software.amazon.awssdk:s3")
+
 }
+
 
 tasks.named('test') {
     useJUnitPlatform()

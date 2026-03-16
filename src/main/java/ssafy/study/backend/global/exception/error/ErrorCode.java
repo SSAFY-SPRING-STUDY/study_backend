@@ -56,7 +56,14 @@ public enum ErrorCode {
 	// COMMENT Errors
 	COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 댓글입니다."),
 	COMMENT_ACCESS_DENIED(HttpStatus.FORBIDDEN, "접근할 수 있는 권한이 없습니다."),
-	RECOMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 대댓글입니다.");
+	RECOMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 대댓글입니다."),
+
+	// QUIZ Errors
+	QUIZ_NOT_FOUND(HttpStatus.NOT_FOUND, "퀴즈가 존재하지 않습니다."),
+	QUIZ_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 생성된 퀴즈가 있습니다."),
+	QUIZ_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "퀴즈 생성에 실패했습니다. 잠시 후 다시 시도해주세요."),
+	QUIZ_INVALID_SUBMISSION(HttpStatus.BAD_REQUEST, "제출한 답안이 유효하지 않습니다."),
+	QUIZ_ATTEMPT_NOT_FOUND(HttpStatus.NOT_FOUND, "퀴즈 시도 이력이 없습니다.");
 
 
 

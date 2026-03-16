@@ -1,8 +1,10 @@
 package ssafy.study.backend.domain.edu.image.controller;
 
+import java.net.URI;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,19 +26,17 @@ import ssafy.study.backend.global.response.ApiResponse;
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
-@Tag(name="Image", description = "이미지 관련 API")
+@Tag(name = "Image", description = "이미지 관련 API")
 public class ImageController {
+
 	private final ImageService imageService;
 
-	@PostMapping("/posts/{postId}/images/presigned-url")
-	@Operation(summary = "이미지 업로드 URL 생성", description = "새로운 이미지 URL을 생성합니다.")
+	@PostMapping("/images/presigned-url")
+	@Operation(summary = "이미지 업로드 URL 생성",
+		description = "S3 Presigned 업로드 URL과 imageId를 발급합니다. 게시글 저장 시 imageIds에 포함하여 연결하세요.")
 	@ResponseStatus(HttpStatus.CREATED)
-	public ApiResponse<ImageResponse> getUploadUrl(
-		@PathVariable Long postId,
-		@Valid @RequestBody ImageRequest request) {
-
-		ImageResponse imageResponse = imageService.getImageUploadUrl(postId, request);
-		return ApiResponse.success("이미지 업로드 URL이 발급되었습니다.", imageResponse);
+	public ApiResponse<ImageResponse> getUploadUrl(@Valid @RequestBody ImageRequest request) {
+		return ApiResponse.success("이미지 업로드 URL이 발급되었습니다.", imageService.getImageUploadUrl(request));
 	}
 
 	@PatchMapping("/images/{imageId}/complete")
@@ -48,18 +48,19 @@ public class ImageController {
 	}
 
 	@GetMapping("/images/{imageId}")
-	@Operation(summary = "특정 이미지 조회", description = "특정 이미지의 정보를 조회합니다.")
-	@ResponseStatus(HttpStatus.OK)
-	public ApiResponse<ImageResponse> getImage(@PathVariable Long imageId) {
-		ImageResponse imageResponse = imageService.getImageDownloadUrl(imageId);
-		return ApiResponse.success("이미지가 성공적으로 조회되었습니다.", imageResponse);
+	@Operation(summary = "이미지 조회",
+		description = "S3 Presigned URL로 302 리다이렉트합니다. 마크다운 이미지 경로로 사용하세요. 데이터는 클라이언트↔S3 간 직접 전송됩니다.")
+	public ResponseEntity<Void> getImage(@PathVariable Long imageId) {
+		String redirectUrl = imageService.getImageRedirectUrl(imageId);
+		return ResponseEntity.status(HttpStatus.FOUND)
+			.location(URI.create(redirectUrl))
+			.build();
 	}
 
 	@GetMapping("/posts/{postId}/images")
-	@Operation(summary = "게시글 이미지 조회", description = "특정 게시글에 포함된 이미지들의 정보를 조회합니다.")
+	@Operation(summary = "게시글 이미지 목록 조회", description = "특정 게시글에 포함된 이미지 목록을 조회합니다.")
 	@ResponseStatus(HttpStatus.OK)
 	public ApiResponse<List<ImageResponse>> getImagesByPost(@PathVariable Long postId) {
-		List<ImageResponse> imageResponses = imageService.getImagesByPost(postId);
-		return ApiResponse.success("게시글의 이미지들이 성공적으로 조회되었습니다.", imageResponses);
+		return ApiResponse.success("게시글의 이미지들이 성공적으로 조회되었습니다.", imageService.getImagesByPost(postId));
 	}
 }

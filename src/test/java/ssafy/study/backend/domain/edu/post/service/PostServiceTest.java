@@ -12,12 +12,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import ssafy.study.backend.domain.edu.curriculum.entity.Curriculum;
 import ssafy.study.backend.domain.edu.curriculum.repository.CurriculumRepository;
-import ssafy.study.backend.domain.edu.image.repository.ImageRepository;
+import ssafy.study.backend.domain.edu.image.service.ImageService;
 import ssafy.study.backend.domain.edu.post.controller.dto.request.PostRequest;
 import ssafy.study.backend.domain.edu.post.controller.dto.response.PostDetailResponse;
 import ssafy.study.backend.domain.edu.post.controller.dto.response.PostSimpleResponse;
@@ -44,7 +43,7 @@ class PostServiceTest {
 	private PostRepository postRepository;
 
 	@Mock
-	private ImageRepository imageRepository;
+	private ImageService imageService;
 
 	@Mock
 	private CurriculumRepository curriculumRepository;
@@ -85,7 +84,7 @@ class PostServiceTest {
 		// given
 		Member author = MemberFixture.member(1L);
 		Curriculum curriculum = CurriculumFixture.curriculum(1L, StudyFixture.study(1L));
-		PostRequest request = new PostRequest("스프링 입문 1강", "스프링 기초 내용입니다.");
+		PostRequest request = new PostRequest("스프링 입문 1강", "스프링 기초 내용입니다.", null);
 		Post savedPost = PostFixture.post(1L, author, curriculum);
 
 		given(entityManager.getReference(Member.class, 1L)).willReturn(author);
@@ -106,7 +105,7 @@ class PostServiceTest {
 	void 게시글_생성_실패_존재하지_않는_커리큘럼() {
 		// given
 		Member author = MemberFixture.member(1L);
-		PostRequest request = new PostRequest("스프링 입문 1강", "내용");
+		PostRequest request = new PostRequest("스프링 입문 1강", "내용", null);
 		given(entityManager.getReference(Member.class, 1L)).willReturn(author);
 		given(curriculumRepository.findById(999L)).willReturn(Optional.empty());
 
@@ -152,7 +151,7 @@ class PostServiceTest {
 		Member author = MemberFixture.member(1L);
 		Curriculum curriculum = CurriculumFixture.curriculum(1L, StudyFixture.study(1L));
 		Post post = PostFixture.post(1L, author, curriculum);
-		PostRequest request = new PostRequest("수정된 제목", "수정된 내용");
+		PostRequest request = new PostRequest("수정된 제목", "수정된 내용", null);
 		given(postRepository.findById(1L)).willReturn(Optional.of(post));
 
 		// when
@@ -166,7 +165,7 @@ class PostServiceTest {
 	@DisplayName("게시글 수정 실패 - 존재하지 않는 게시글")
 	void 게시글_수정_실패_존재하지_않는_게시글() {
 		// given
-		PostRequest request = new PostRequest("수정된 제목", "수정된 내용");
+		PostRequest request = new PostRequest("수정된 제목", "수정된 내용", null);
 		given(postRepository.findById(999L)).willReturn(Optional.empty());
 
 		// when & then
@@ -182,7 +181,7 @@ class PostServiceTest {
 		Member author = MemberFixture.member(1L);
 		Curriculum curriculum = CurriculumFixture.curriculum(1L, StudyFixture.study(1L));
 		Post post = PostFixture.post(1L, author, curriculum);
-		PostRequest request = new PostRequest("수정된 제목", "수정된 내용");
+		PostRequest request = new PostRequest("수정된 제목", "수정된 내용", null);
 		given(postRepository.findById(1L)).willReturn(Optional.of(post));
 
 		// when & then (authorId가 다른 2L로 요청)

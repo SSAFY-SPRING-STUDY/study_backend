@@ -24,7 +24,7 @@ public class S3Service {
 
 	public String getDownloadPresignedUrl(String key) {
 		return s3Presigner.presignGetObject(b -> b
-			.signatureDuration(Duration.ofMinutes(10))
+			.signatureDuration(Duration.ofMinutes(60))
 			.getObjectRequest(g -> g.bucket(awsProperties.bucket()).key(key))
 		).url().toString();
 	}

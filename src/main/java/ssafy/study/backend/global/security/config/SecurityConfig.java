@@ -56,6 +56,9 @@ public class SecurityConfig {
 					.requestMatchers("/error").permitAll()
 					.requestMatchers("/actuator/**").permitAll()
 
+					// IMAGE Domain - 마크다운 렌더링 시 <img> 태그가 인증 없이 접근
+					.requestMatchers(HttpMethod.GET, "/api/v1/images/**").permitAll()
+
 					// MEMBER Domain
 					.requestMatchers(HttpMethod.POST, "/api/v1/members/signup").permitAll()
 

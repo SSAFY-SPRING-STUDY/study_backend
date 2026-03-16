@@ -8,11 +8,14 @@ import ssafy.study.backend.domain.edu.post.entity.Post;
 public class ImageFixture {
 
 	public static Image image(Post post) {
-		return Image.create(post, "posts/1/uuid_test.png");
+		Image image = Image.createPending("images/uuid_test.png");
+		image.attachTo(post);
+		return image;
 	}
 
 	public static Image image(Long id, Post post) {
-		Image image = Image.create(post, "posts/1/uuid_test.png");
+		Image image = Image.createPending("images/uuid_test.png");
+		image.attachTo(post);
 		ReflectionTestUtils.setField(image, "id", id);
 		return image;
 	}

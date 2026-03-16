@@ -13,6 +13,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 
 import tools.jackson.databind.exc.InvalidFormatException;
 import lombok.extern.slf4j.Slf4j;
@@ -103,6 +104,14 @@ public class GlobalExceptionHandler {
 
 		return ResponseEntity.status(errorCode.getHttpStatus())
 			.body(ApiResponse.error(errorCode));
+	}
+
+	/**
+	 * SSE 클라이언트 연결 끊김 처리 (정상적인 상황이므로 무시)
+	 */
+	@ExceptionHandler(AsyncRequestNotUsableException.class)
+	public void handleAsyncRequestNotUsable(AsyncRequestNotUsableException e) {
+		// SSE 클라이언트가 연결을 끊었을 때 발생 — 정상 상황이므로 무시
 	}
 
 	/**
