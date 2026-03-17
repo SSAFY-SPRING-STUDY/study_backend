@@ -33,29 +33,35 @@ jobs:
             --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
             --document-name "AWS-RunShellScript" \
             --region ap-northeast-2 \
-            --parameters commands="[\"sudo -u ssm-user bash /home/ssm-user/app/deploy/deploy.sh ghcr.io/$OWNER_LC/$IMAGE_NAME:latest\"]" \
+            --parameters commands="[\"sudo -u ssm-user bash /home/ssm-user/app/deploy/deploy.sh ghcr.io/$OWNER_LC/$IMAGE_NAME\"]" \
             --query "Command.CommandId" \
             --output text)
           
           echo "Command ID: $COMMAND_ID"
 
-                    # 실패하더라도 멈추지 않게 || true 추가
-                    aws ssm wait command-executed \
-                      --command-id "$COMMAND_ID" \
-                      --instance-id "${{ secrets.EC2_INSTANCE_ID }}" \
-                      --region ap-northeast-2 || true
+          # 실패하더라도 멈추지 않게 || true 추가
+          aws ssm wait command-executed \
+            --command-id "$COMMAND_ID" \
+            --instance-id "${{ secrets.EC2_INSTANCE_ID }}" \
+            --region ap-northeast-2 || true
 
-                    # 이제 여기서 진짜 에러 이유가 화면에 찍힙니다!
-                    aws ssm get-command-invocation \
-                      --command-id "$COMMAND_ID" \
-                      --instance-id "${{ secrets.EC2_INSTANCE_ID }}" \
-                      --region ap-northeast-2 \
-                      --query "{Status:Status, Output:StandardOutputContent, Error:StandardErrorContent}" \
-                      --output table
+          # 실행 로그 출력
+          aws ssm get-command-invocation \
+            --command-id "$COMMAND_ID" \
+            --instance-id "${{ secrets.EC2_INSTANCE_ID }}" \
+            --region ap-northeast-2 \
+            --query "{Status:Status, Output:StandardOutputContent, Error:StandardErrorContent}" \
+            --output table
 
-                    # 마지막에 실제 성공 여부를 다시 체크하여 작업의 최종 상태를 결정
-                    FINAL_STATUS=$(aws ssm get-command-invocation --command-id "$COMMAND_ID" --instance-id "${{ secrets.EC2_INSTANCE_ID }}" --query "Status" --output text)
-                    if [ "$FINAL_STATUS" != "Success" ]; then
-                      echo "Deployment failed with status: $FINAL_STATUS"
-                      exit 1
-                    fi
+          # 최종 상태 체크
+          FINAL_STATUS=$(aws ssm get-command-invocation \
+            --command-id "$COMMAND_ID" \
+            --instance-id "${{ secrets.EC2_INSTANCE_ID }}" \
+            --region ap-northeast-2 \
+            --query "Status" \
+            --output text)
+          
+          if [ "$FINAL_STATUS" != "Success" ]; then
+            echo "Deployment failed with status: $FINAL_STATUS"
+            exit 1
+          fi
