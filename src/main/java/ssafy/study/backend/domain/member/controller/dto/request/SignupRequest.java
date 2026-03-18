@@ -23,7 +23,7 @@ public record SignupRequest(
 	String name,
 
 	@NotBlank(message = "닉네임은 필수입니다.")
-	@Size(min = 3, max = 50, message = "닉네임은 3자 이상 50자 이하이어야 합니다.")
+	@Size(min = 1, max = 50, message = "닉네임은 1자 이상 50자 이하이어야 합니다.")
 	@Schema(description = "회원가입할 사용자의 닉네임", example = "testUser")
 	String nickname
 ) {
