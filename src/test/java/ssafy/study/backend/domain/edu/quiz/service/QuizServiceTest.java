@@ -6,14 +6,15 @@ import static org.mockito.BDDMockito.*;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import tools.jackson.databind.ObjectMapper;
 
 import ssafy.study.backend.domain.edu.curriculum.entity.Curriculum;
 import ssafy.study.backend.domain.edu.post.entity.Post;
@@ -33,17 +34,17 @@ import ssafy.study.backend.fixture.MemberFixture;
 import ssafy.study.backend.fixture.PostFixture;
 import ssafy.study.backend.fixture.QuizFixture;
 import ssafy.study.backend.fixture.StudyFixture;
+import ssafy.study.backend.global.ai.GroqClient;
 import ssafy.study.backend.global.exception.CustomException;
 import ssafy.study.backend.global.exception.error.ErrorCode;
 
 @ExtendWith(MockitoExtension.class)
 class QuizServiceTest {
 
-	@InjectMocks
 	private QuizService quizService;
 
 	@Mock
-	private ChatClient chatClient;
+	private GroqClient groqClient;
 
 	@Mock
 	private PostRepository postRepository;
@@ -56,6 +57,12 @@ class QuizServiceTest {
 
 	@Mock
 	private QuizAttemptRepository quizAttemptRepository;
+
+	@BeforeEach
+	void setUp() {
+		quizService = new QuizService(groqClient, new ObjectMapper(), postRepository, memberRepository, quizRepository,
+			quizAttemptRepository);
+	}
 
 	// ──────────────────────────────────────────────
 	// generateQuiz
@@ -73,7 +80,7 @@ class QuizServiceTest {
 			ReflectionTestUtils.setField(q, "id", 1L);
 			return q;
 		});
-		mockChatClient(QuizFixture.validQuizJson());
+		mockGroqClient(QuizFixture.validQuizJson());
 
 		// when
 		QuizResponse result = quizService.generateQuiz(1L);
@@ -109,7 +116,7 @@ class QuizServiceTest {
 		assertThatThrownBy(() -> quizService.generateQuiz(1L))
 			.isInstanceOf(CustomException.class)
 			.hasFieldOrPropertyWithValue("errorCode", ErrorCode.QUIZ_ALREADY_EXISTS);
-		then(chatClient).shouldHaveNoInteractions();
+		then(groqClient).shouldHaveNoInteractions();
 	}
 
 	@Test
@@ -119,13 +126,7 @@ class QuizServiceTest {
 		Post post = post(1L);
 		given(postRepository.findById(1L)).willReturn(Optional.of(post));
 		given(quizRepository.existsByPost(post)).willReturn(false);
-
-		ChatClient.ChatClientRequestSpec requestSpec = mock(ChatClient.ChatClientRequestSpec.class);
-		ChatClient.CallResponseSpec callSpec = mock(ChatClient.CallResponseSpec.class);
-		given(chatClient.prompt()).willReturn(requestSpec);
-		given(requestSpec.user(anyString())).willReturn(requestSpec);
-		given(requestSpec.call()).willReturn(callSpec);
-		given(callSpec.content()).willThrow(new RuntimeException("Gemini API error"));
+		given(groqClient.chat(anyString(), anyString())).willThrow(new RuntimeException("Groq API error"));
 
 		// when & then
 		assertThatThrownBy(() -> quizService.generateQuiz(1L))
@@ -400,13 +401,8 @@ class QuizServiceTest {
 		return PostFixture.post(id, MemberFixture.member(1L), curriculum);
 	}
 
-	private void mockChatClient(String responseJson) {
-		ChatClient.ChatClientRequestSpec requestSpec = mock(ChatClient.ChatClientRequestSpec.class);
-		ChatClient.CallResponseSpec callSpec = mock(ChatClient.CallResponseSpec.class);
-		given(chatClient.prompt()).willReturn(requestSpec);
-		given(requestSpec.user(anyString())).willReturn(requestSpec);
-		given(requestSpec.call()).willReturn(callSpec);
-		given(callSpec.content()).willReturn(responseJson);
+	private void mockGroqClient(String responseJson) {
+		given(groqClient.chat(anyString(), anyString())).willReturn(responseJson);
 	}
 
 	private QuizSubmitRequest allCorrectAnswers(Quiz quiz) {
