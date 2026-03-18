@@ -38,6 +38,10 @@ custom:
     region: ap-northeast-2
 
 
+groq:
+  api-key: test-groq-api-key
+  model: llama-3.3-70b-versatile
+
 app:
   cors:
     allowed-origins:
