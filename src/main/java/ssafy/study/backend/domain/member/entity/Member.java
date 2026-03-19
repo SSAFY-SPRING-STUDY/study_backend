@@ -53,4 +53,12 @@ public class Member {
 		this.role = role;
 		this.level = level;
 	}
+
+	public void updateRole(MemberRole role) {
+		this.role = role;
+	}
+
+	public void updateLevel(MemberLevel level) {
+		this.level = level;
+	}
 }
