@@ -14,6 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import tools.jackson.databind.exc.InvalidFormatException;
 import lombok.extern.slf4j.Slf4j;
@@ -112,6 +113,16 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(AsyncRequestNotUsableException.class)
 	public void handleAsyncRequestNotUsable(AsyncRequestNotUsableException e) {
 		// SSE 클라이언트가 연결을 끊었을 때 발생 — 정상 상황이므로 무시
+	}
+
+	/**
+	 * 존재하지 않는 리소스 요청 처리 (404)
+	 */
+	@ExceptionHandler(NoResourceFoundException.class)
+	public ResponseEntity<ApiResponse<Void>> handleNoResourceFoundException(NoResourceFoundException e) {
+		ErrorCode errorCode = ErrorCode.NOT_FOUND;
+		return ResponseEntity.status(errorCode.getHttpStatus())
+			.body(ApiResponse.error(errorCode));
 	}
 
 	/**
