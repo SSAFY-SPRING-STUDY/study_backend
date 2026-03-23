@@ -1,7 +1,9 @@
 # Study Backend
 
-온라인 교육 플랫폼을 위한 Spring Boot REST API 백엔드입니다.
-학습 콘텐츠 관리, AI 기반 퀴즈 생성, 실시간 알림, 회원 관리 등의 기능을 제공합니다.
+SSAFY 스터디원 20명이 함께 사용하는 스터디 플랫폼 서비스의 백엔드입니다.
+유튜브 강의 형식의 학습 콘텐츠와 AI 퀴즈, 실시간 알림 등을 통해 효율적인 스터디 진행을 지원합니다.
+
+🌐 **배포 주소:** [www.ssafy-study.site](https://www.ssafy-study.site)
 
 ---
 
