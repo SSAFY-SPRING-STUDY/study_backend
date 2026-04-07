@@ -27,6 +27,9 @@ public class StudyService {
 			.description(request.description())
 			.level(request.level())
 			.type(request.type())
+			.githubOrgName(request.githubOrgName())
+			.githubRepoName(request.githubRepoName())
+			.githubWebhookSecret(request.githubWebhookSecret())
 			.build();
 
 		Study savedStudy = studyRepository.save(study);
@@ -38,7 +41,8 @@ public class StudyService {
 		Study study = studyRepository.findById(studyId)
 			.orElseThrow(() -> new CustomException(ErrorCode.STUDY_NOT_FOUND));
 
-		study.update(request.name(), request.description(), request.level(), request.type());
+		study.update(request.name(), request.description(), request.level(), request.type(),
+			request.githubOrgName(), request.githubRepoName(), request.githubWebhookSecret());
 		return StudyResponse.from(study);
 	}
 

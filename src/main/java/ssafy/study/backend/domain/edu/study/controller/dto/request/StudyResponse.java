@@ -2,12 +2,14 @@ package ssafy.study.backend.domain.edu.study.controller.dto.request;
 
 import ssafy.study.backend.domain.edu.study.entity.Study;
 
-public record StudyResponse (
+public record StudyResponse(
 	Long id,
 	String name,
 	String description,
 	String level,
-	String type
+	String type,
+	String githubOrgName,
+	String githubRepoName
 ) {
 	public static StudyResponse from(Study savedStudy) {
 		return new StudyResponse(
@@ -15,7 +17,9 @@ public record StudyResponse (
 			savedStudy.getName(),
 			savedStudy.getDescription(),
 			savedStudy.getLevel().name(),
-			savedStudy.getType().name()
+			savedStudy.getType().name(),
+			savedStudy.getGithubOrgName(),
+			savedStudy.getGithubRepoName()
 		);
 	}
 }

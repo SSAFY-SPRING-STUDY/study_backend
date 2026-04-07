@@ -34,18 +34,35 @@ public class Study {
 	@Enumerated(EnumType.STRING)
 	private StudyType type; // ALGORITHM, BACKEND, COMPUTER_SCIENCE
 
+	@Column
+	private String githubOrgName;
+
+	@Column
+	private String githubRepoName;
+
+	@Column
+	private String githubWebhookSecret;
+
 	@Builder
-	private Study(String name, String description, DifficultyLevel level, StudyType type) {
+	private Study(String name, String description, DifficultyLevel level, StudyType type,
+		String githubOrgName, String githubRepoName, String githubWebhookSecret) {
 		this.name = name;
 		this.description = description;
 		this.level = level;
 		this.type = type;
+		this.githubOrgName = githubOrgName;
+		this.githubRepoName = githubRepoName;
+		this.githubWebhookSecret = githubWebhookSecret;
 	}
 
-	public void update(String name, String description, DifficultyLevel level, StudyType type) {
+	public void update(String name, String description, DifficultyLevel level, StudyType type,
+		String githubOrgName, String githubRepoName, String githubWebhookSecret) {
 		this.name = name;
 		this.description = description;
 		this.level = level;
 		this.type = type;
+		this.githubOrgName = githubOrgName;
+		this.githubRepoName = githubRepoName;
+		this.githubWebhookSecret = githubWebhookSecret;
 	}
 }

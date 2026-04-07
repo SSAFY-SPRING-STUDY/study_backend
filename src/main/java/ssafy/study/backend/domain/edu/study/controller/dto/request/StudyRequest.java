@@ -24,6 +24,15 @@ public record StudyRequest(
 
 	@NotNull(message = "스터디 타입은 필수입니다.")
 	@Schema(description = "스터디 타입", example = "BACKEND")
-	StudyType type
+	StudyType type,
+
+	@Schema(description = "GitHub 조직명 (GitHub 연동 스터디)", example = "my-org")
+	String githubOrgName,
+
+	@Schema(description = "GitHub 레포 이름", example = "study-assignments")
+	String githubRepoName,
+
+	@Schema(description = "GitHub Webhook Secret", example = "secret-value")
+	String githubWebhookSecret
 
 ) {}
