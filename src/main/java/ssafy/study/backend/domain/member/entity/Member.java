@@ -33,7 +33,7 @@ public class Member {
 	private String nickname;
 
 	@Setter
-	@Column(nullable = false)
+	@Column
 	private String password;
 
 	@Column(nullable = false)
@@ -44,14 +44,23 @@ public class Member {
 	@Enumerated(EnumType.STRING)
 	private MemberLevel level;
 
+	@Column(unique = true)
+	private String githubId;
+
+	@Column
+	private String githubUsername;
+
 	@Builder
-	private Member(String name, String email, String nickname, String password, MemberRole role, MemberLevel level) {
+	private Member(String name, String email, String nickname, String password, MemberRole role, MemberLevel level,
+		String githubId, String githubUsername) {
 		this.name = name;
 		this.email = email;
 		this.nickname = nickname;
 		this.password = password;
 		this.role = role;
 		this.level = level;
+		this.githubId = githubId;
+		this.githubUsername = githubUsername;
 	}
 
 	public void updateRole(MemberRole role) {
@@ -60,5 +69,14 @@ public class Member {
 
 	public void updateLevel(MemberLevel level) {
 		this.level = level;
+	}
+
+	public void connectGithub(String githubId, String githubUsername) {
+		this.githubId = githubId;
+		this.githubUsername = githubUsername;
+	}
+
+	public boolean isGithubLinked() {
+		return this.githubId != null;
 	}
 }
