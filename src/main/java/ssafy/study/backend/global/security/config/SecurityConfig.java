@@ -69,6 +69,14 @@ public class SecurityConfig {
 					.requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
 					.requestMatchers(HttpMethod.POST, "/api/v1/auth/refresh").permitAll()
 					.requestMatchers(HttpMethod.POST, "/api/v1/auth/logout").permitAll()
+					.requestMatchers(HttpMethod.GET, "/api/v1/auth/github").permitAll()
+					.requestMatchers(HttpMethod.GET, "/api/v1/auth/github/callback").permitAll()
+
+					// MEMBER Domain - GitHub 계정 연결 콜백 (state로 인증)
+					.requestMatchers(HttpMethod.GET, "/api/v1/members/me/github/connect/callback").permitAll()
+
+					// Webhook Domain - HMAC 서명으로 인증
+					.requestMatchers(HttpMethod.POST, "/api/v1/webhook/github/**").permitAll()
 
 					.anyRequest().authenticated()
 			)
