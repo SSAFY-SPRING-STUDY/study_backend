@@ -1,0 +1,4 @@
+ALTER TABLE member
+  ADD COLUMN github_id VARCHAR(50) UNIQUE,
+  ADD COLUMN github_username VARCHAR(100),
+  MODIFY COLUMN password VARCHAR(255) NULL;
