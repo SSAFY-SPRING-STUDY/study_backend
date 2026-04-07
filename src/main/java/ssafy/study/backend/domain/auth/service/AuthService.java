@@ -36,6 +36,9 @@ public class AuthService {
 		Member member = memberRepository.findByEmail(request.email())
 			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
+		if (member.getPassword() == null) {
+			throw new CustomException(ErrorCode.GITHUB_ONLY_ACCOUNT);
+		}
 		if (!passwordEncoder.matches(request.password(), member.getPassword())) {
 			throw new CustomException(ErrorCode.BAD_CREDENTIAL);
 		}
