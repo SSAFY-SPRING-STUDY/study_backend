@@ -1,9 +1,13 @@
 package ssafy.study.backend.domain.auth.controller;
 
+import java.io.IOException;
+
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,6 +19,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ssafy.study.backend.domain.auth.controller.dto.LoginRequest;
 import ssafy.study.backend.domain.auth.service.AuthService;
+import ssafy.study.backend.domain.auth.service.GitHubOAuthService;
 import ssafy.study.backend.domain.auth.service.dto.AuthResult;
 import ssafy.study.backend.domain.member.controller.dto.response.MemberInfo;
 import ssafy.study.backend.global.cookie.CookieService;
@@ -29,7 +34,33 @@ import ssafy.study.backend.global.response.ApiResponse;
 public class AuthController {
 
 	private final AuthService authService;
+	private final GitHubOAuthService gitHubOAuthService;
 	private final CookieService cookieService;
+
+	/**
+	 * GitHub 로그인 — GitHub OAuth 페이지로 redirect
+	 */
+	@GetMapping("/github")
+	@Operation(summary = "GitHub 로그인", description = "GitHub OAuth 로그인 페이지로 redirect합니다.")
+	public void githubLogin(HttpServletResponse response) throws IOException {
+		response.sendRedirect(gitHubOAuthService.getLoginRedirectUrl());
+	}
+
+	/**
+	 * GitHub 로그인 콜백 — JWT 발급 후 반환
+	 */
+	@GetMapping("/github/callback")
+	@Operation(summary = "GitHub 로그인 콜백", description = "GitHub OAuth 콜백을 처리하고 JWT를 발급합니다.")
+	@ResponseStatus(HttpStatus.OK)
+	public ApiResponse<MemberInfo> githubCallback(
+		@RequestParam String code,
+		HttpServletResponse response
+	) {
+		AuthResult result = gitHubOAuthService.handleLoginCallback(code);
+		cookieService.setAccessToken(response, result.accessToken());
+		cookieService.setRefreshToken(response, result.refreshToken());
+		return ApiResponse.success("GitHub 로그인이 완료되었습니다.", result.memberInfo());
+	}
 
 	/**
 	 * 로그인
