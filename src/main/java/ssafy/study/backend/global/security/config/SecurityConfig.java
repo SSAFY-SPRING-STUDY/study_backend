@@ -71,12 +71,33 @@ public class SecurityConfig {
 					.requestMatchers(HttpMethod.POST, "/api/v1/auth/logout").permitAll()
 					.requestMatchers(HttpMethod.GET, "/api/v1/auth/github").permitAll()
 					.requestMatchers(HttpMethod.GET, "/api/v1/auth/github/callback").permitAll()
+					// 비밀번호 재설정 — 로그인 불가능한 사용자가 호출하는 통로이므로 permitAll.
+					// 남용 방지는 PasswordResetService 의 RateLimiter 와 User Enumeration 방지 로직이 담당.
+					.requestMatchers(HttpMethod.POST, "/api/v1/auth/password-reset/request").permitAll()
+					.requestMatchers(HttpMethod.POST, "/api/v1/auth/password-reset/confirm").permitAll()
 
-					// MEMBER Domain - GitHub 계정 연결 콜백 (state로 인증)
-					.requestMatchers(HttpMethod.GET, "/api/v1/members/me/github/connect/callback").permitAll()
+					// STUDY Domain - 비회원 조회 허용
+					.requestMatchers(HttpMethod.GET, "/api/v1/studies").permitAll()
+					.requestMatchers(HttpMethod.GET, "/api/v1/studies/{studyId}").permitAll()
 
-					// Webhook Domain - HMAC 서명으로 인증
-					.requestMatchers(HttpMethod.POST, "/api/v1/webhook/github/**").permitAll()
+					// CURRICULUM Domain - 비회원 조회 허용
+					.requestMatchers(HttpMethod.GET, "/api/v1/studies/{studyId}/curriculums").permitAll()
+					.requestMatchers(HttpMethod.GET, "/api/v1/curriculums/{curriculumId}").permitAll()
+
+					// POST Domain - 비회원 조회 허용
+					.requestMatchers(HttpMethod.GET, "/api/v1/curriculums/{curriculumId}/posts").permitAll()
+					.requestMatchers(HttpMethod.GET, "/api/v1/posts/{postId}").permitAll()
+
+					// COMMENT Domain - 읽기만 허용 (쓰기는 인증 필수)
+					.requestMatchers(HttpMethod.GET, "/api/v1/posts/{postId}/comments").permitAll()
+					.requestMatchers(HttpMethod.GET, "/api/v1/comments/{commentId}/recomments").permitAll()
+
+					// NOTICE Domain - 비회원 조회 허용
+					.requestMatchers(HttpMethod.GET, "/api/v1/notices").permitAll()
+					.requestMatchers(HttpMethod.GET, "/api/v1/notices/{noticeId}").permitAll()
+
+					// MEMBER Domain - 다른 사용자 프로필 조회 허용 (/me 는 인증 필요하므로 별도 분기)
+					.requestMatchers(HttpMethod.GET, "/api/v1/members/{memberId:[0-9]+}").permitAll()
 
 					.anyRequest().authenticated()
 			)
