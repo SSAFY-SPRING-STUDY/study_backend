@@ -156,7 +156,7 @@ class AdminMemberServiceTest {
 		MemberInfo result = adminMemberService.updateMember(1L, request);
 
 		// then
-		assertThat(result.nickName()).isEqualTo("newnick");
+		assertThat(result.nickname()).isEqualTo("newnick");
 	}
 
 	@Test
@@ -203,7 +203,7 @@ class AdminMemberServiceTest {
 
 		// then
 		assertThat(result.name()).isEqualTo("새이름");
-		assertThat(result.nickName()).isEqualTo("newnick");
+		assertThat(result.nickname()).isEqualTo("newnick");
 		assertThat(result.role()).isEqualTo(MemberRole.ROLE_ADMIN);
 		assertThat(result.level()).isEqualTo(MemberLevel.INTERMEDIATE);
 	}
@@ -267,7 +267,7 @@ class AdminMemberServiceTest {
 
 		// then
 		assertThat(result.name()).isEqualTo(originalName);
-		assertThat(result.nickName()).isEqualTo(originalNickname);
+		assertThat(result.nickname()).isEqualTo(originalNickname);
 		assertThat(result.role()).isEqualTo(MemberRole.ROLE_USER);
 		assertThat(result.level()).isEqualTo(MemberLevel.BASIC);
 	}

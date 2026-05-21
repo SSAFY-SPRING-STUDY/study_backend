@@ -75,8 +75,4 @@ public class Member {
 		this.githubId = githubId;
 		this.githubUsername = githubUsername;
 	}
-
-	public boolean isGithubLinked() {
-		return this.githubId != null;
-	}
 }

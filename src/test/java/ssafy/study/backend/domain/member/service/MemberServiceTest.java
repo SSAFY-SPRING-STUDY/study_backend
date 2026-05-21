@@ -89,7 +89,7 @@ class MemberServiceTest {
 		// then
 		assertThat(result.id()).isEqualTo(1L);
 		assertThat(result.email()).isEqualTo(member.getEmail());
-		assertThat(result.nickName()).isEqualTo(member.getNickname());
+		assertThat(result.nickname()).isEqualTo(member.getNickname());
 	}
 
 	@Test
@@ -118,7 +118,7 @@ class MemberServiceTest {
 
 		// then
 		assertThat(result.name()).isEqualTo("새이름");
-		assertThat(result.nickName()).isEqualTo("newnickname");
+		assertThat(result.nickname()).isEqualTo("newnickname");
 	}
 
 	@Test
