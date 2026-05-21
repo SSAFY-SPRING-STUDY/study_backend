@@ -18,6 +18,18 @@ spring:
       host: localhost
       port: 6379
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: test@example.com
+    password: test-password
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 custom:
   jwt:
     access:
@@ -36,6 +48,13 @@ custom:
   aws:
     bucket: test-bucket
     region: ap-northeast-2
+
+  password-reset:
+    token-ttl: 1800000
+    rate-limit-window: 300000
+    rate-limit-max: 3
+  front:
+    base-url: https://app.example.com
 
 
 groq:

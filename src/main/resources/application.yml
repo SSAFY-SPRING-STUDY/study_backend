@@ -19,6 +19,18 @@ spring:
       password: ${REDIS_PASSWORD:}
       database: 0
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 groq:
   api-key: ${GROQ_API_KEY}
   model: llama-3.3-70b-versatile
@@ -27,11 +39,6 @@ github:
   client-id: ${GITHUB_CLIENT_ID}
   client-secret: ${GITHUB_CLIENT_SECRET}
   redirect-uri: ${GITHUB_REDIRECT_URI}                        # /api/v1/auth/github/callback
-  connect-client-id: ${GITHUB_CONNECT_CLIENT_ID}
-  connect-client-secret: ${GITHUB_CONNECT_CLIENT_SECRET}
-  connect-redirect-uri: ${GITHUB_CONNECT_REDIRECT_URI}        # /api/v1/members/me/github/connect/callback
-  front-redirect-uri: ${GITHUB_FRONT_REDIRECT_URI}            # 연결 완료 후 프론트 redirect base URL
-  token: ${GITHUB_TOKEN}                                      # Issue 생성용 PAT (필요 scope: repo)
 
 custom:
   jwt:
@@ -50,6 +57,12 @@ custom:
   aws:
     bucket: ${BUCKET_NAME}
     region: ${REGION}
+  password-reset:
+    token-ttl: 1800000          # 30분 (ms)
+    rate-limit-window: 300000   # 5분 (ms)
+    rate-limit-max: 3
+  front:
+    base-url: ${FRONT_BASE_URL}   # 프론트엔드 base URL (예: http://localhost:3000)
 
 app:
   cors:

@@ -18,10 +18,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ssafy.study.backend.domain.auth.controller.dto.LoginRequest;
+import ssafy.study.backend.domain.auth.controller.dto.PasswordResetConfirmRequest;
+import ssafy.study.backend.domain.auth.controller.dto.PasswordResetRequestRequest;
 import ssafy.study.backend.domain.auth.service.AuthService;
 import ssafy.study.backend.domain.auth.service.GitHubOAuthService;
+import ssafy.study.backend.domain.auth.service.PasswordResetService;
 import ssafy.study.backend.domain.auth.service.dto.AuthResult;
 import ssafy.study.backend.domain.member.controller.dto.response.MemberInfo;
+import ssafy.study.backend.global.config.FrontProperties;
 import ssafy.study.backend.global.cookie.CookieService;
 import ssafy.study.backend.global.exception.CustomException;
 import ssafy.study.backend.global.exception.error.ErrorCode;
@@ -35,7 +39,9 @@ public class AuthController {
 
 	private final AuthService authService;
 	private final GitHubOAuthService gitHubOAuthService;
+	private final PasswordResetService passwordResetService;
 	private final CookieService cookieService;
+	private final FrontProperties frontProperties;
 
 	/**
 	 * GitHub 로그인 — GitHub OAuth 페이지로 redirect
@@ -51,15 +57,14 @@ public class AuthController {
 	 */
 	@GetMapping("/github/callback")
 	@Operation(summary = "GitHub 로그인 콜백", description = "GitHub OAuth 콜백을 처리하고 JWT를 발급합니다.")
-	@ResponseStatus(HttpStatus.OK)
-	public ApiResponse<MemberInfo> githubCallback(
+	public void githubCallback(
 		@RequestParam String code,
 		HttpServletResponse response
-	) {
+	) throws IOException {
 		AuthResult result = gitHubOAuthService.handleLoginCallback(code);
 		cookieService.setAccessToken(response, result.accessToken());
 		cookieService.setRefreshToken(response, result.refreshToken());
-		return ApiResponse.success("GitHub 로그인이 완료되었습니다.", result.memberInfo());
+		response.sendRedirect(frontProperties.baseUrl());
 	}
 
 	/**
@@ -126,5 +131,32 @@ public class AuthController {
 		cookieService.deleteRefreshToken(response);
 
 		return ApiResponse.success("로그아웃이 완료되었습니다.");
+	}
+
+	/**
+	 * 비밀번호 재설정 요청 — 가입된 이메일에만 메일 발송.
+	 * 응답은 회원 존재 여부와 무관하게 항상 200 (User Enumeration 방지).
+	 */
+	@PostMapping(value = "/password-reset/request", consumes = "application/json")
+	@Operation(summary = "비밀번호 재설정 요청", description = "입력한 이메일로 비밀번호 재설정 링크를 발송합니다. 회원 존재 여부와 무관하게 동일한 응답을 반환합니다.")
+	@ResponseStatus(HttpStatus.OK)
+	public ApiResponse<Void> requestPasswordReset(
+		@Valid @RequestBody PasswordResetRequestRequest request
+	) {
+		passwordResetService.requestReset(request);
+		return ApiResponse.success("입력하신 이메일이 가입된 계정이라면 재설정 메일이 발송됩니다.");
+	}
+
+	/**
+	 * 비밀번호 재설정 확정 — 토큰 검증 후 비밀번호 변경.
+	 */
+	@PostMapping(value = "/password-reset/confirm", consumes = "application/json")
+	@Operation(summary = "비밀번호 재설정 확정", description = "재설정 토큰과 새 비밀번호로 비밀번호를 변경합니다.")
+	@ResponseStatus(HttpStatus.OK)
+	public ApiResponse<Void> confirmPasswordReset(
+		@Valid @RequestBody PasswordResetConfirmRequest request
+	) {
+		passwordResetService.confirmReset(request);
+		return ApiResponse.success("비밀번호가 성공적으로 재설정되었습니다.");
 	}
 }

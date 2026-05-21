@@ -25,6 +25,7 @@ public enum ErrorCode {
 	EMAIL_DUPLICATE(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다."),
 	USERNAME_DUPLICATE(HttpStatus.CONFLICT, "이미 사용 중인 사용자 이름입니다."),
 	MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
+	MEMBER_PROFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 회원 프로필입니다."),
 
 	// Authentication Errors
 	BAD_CREDENTIAL(HttpStatus.UNAUTHORIZED, "아이디 또는 비밀번호가 올바르지 않습니다."),
@@ -33,6 +34,7 @@ public enum ErrorCode {
 	REFRESH_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "RefreshToken이 존재하지 않습니다."),
 	INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "기존 비밀번호의 정보가 올바르지 않습니다." ),
 	SAME_AS_OLD_PASSWORD(HttpStatus.BAD_REQUEST, "새로운 비밀번호는 이전 비밀번호와 달라야 합니다."),
+	INVALID_PASSWORD_RESET_TOKEN(HttpStatus.BAD_REQUEST, "유효하지 않거나 만료된 재설정 토큰입니다."),
 
 	// CURRICULUM Errors
 	CURRICULUM_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 커리큘럼입니다." ),
@@ -67,20 +69,10 @@ public enum ErrorCode {
 	QUIZ_ATTEMPT_NOT_FOUND(HttpStatus.NOT_FOUND, "퀴즈 시도 이력이 없습니다."),
 
 	// Study Member Errors
-	STUDY_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "스터디 멤버가 아닙니다."),
+	STUDY_MEMBER_NOT_FOUND(HttpStatus.FORBIDDEN, "스터디 멤버가 아닙니다."),
 	STUDY_MEMBER_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 가입된 스터디입니다."),
 
-	// Assignment Errors
-	ASSIGNMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 과제입니다."),
-	ASSIGNMENT_ALREADY_APPLIED(HttpStatus.CONFLICT, "이미 신청한 과제입니다."),
-	ASSIGNMENT_PREREQUISITE_NOT_MET(HttpStatus.FORBIDDEN, "이전 과제를 먼저 완료해야 합니다."),
-	ASSIGNMENT_PROGRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "과제 진행 이력이 없습니다."),
-
-	// GitHub Errors
-	GITHUB_ISSUE_CREATION_FAILED(HttpStatus.BAD_GATEWAY, "GitHub Issue 생성에 실패했습니다. PAT의 repo 스코프 권한을 확인하세요."),
-	GITHUB_WEBHOOK_INVALID_SIGNATURE(HttpStatus.FORBIDDEN, "유효하지 않은 Webhook 서명입니다."),
-	GITHUB_ACCOUNT_NOT_LINKED(HttpStatus.BAD_REQUEST, "GitHub 계정이 연동되어 있지 않습니다."),
-	GITHUB_ACCOUNT_ALREADY_LINKED(HttpStatus.CONFLICT, "이미 연동된 GitHub 계정입니다."),
+	// GitHub OAuth Errors
 	GITHUB_OAUTH_FAILED(HttpStatus.BAD_GATEWAY, "GitHub OAuth 처리에 실패했습니다."),
 	GITHUB_ONLY_ACCOUNT(HttpStatus.BAD_REQUEST, "GitHub으로만 로그인 가능한 계정입니다. GitHub 로그인을 이용해주세요."),
 
