@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,8 +38,8 @@ public class StudyController {
 	@Operation(summary = "스터디 생성", description = "새로운 스터디를 생성합니다.")
 	@PreAuthorize("hasRole('ADMIN')")
 	@ResponseStatus(HttpStatus.CREATED)
-	public ApiResponse<StudyResponse> create(@Valid @RequestBody StudyRequest request) {
-		StudyResponse response = studyService.createStudy(request);
+	public ApiResponse<StudyResponse> create(@AuthenticationPrincipal Long memberId, @Valid @RequestBody StudyRequest request) {
+		StudyResponse response = studyService.createStudy(request, memberId);
 		return ApiResponse.success("스터디가 성공적으로 생성되었습니다.", response);
 	}
 

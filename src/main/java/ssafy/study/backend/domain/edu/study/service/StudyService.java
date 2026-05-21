@@ -19,20 +19,19 @@ import ssafy.study.backend.global.exception.error.ErrorCode;
 @RequiredArgsConstructor
 public class StudyService {
 	private final StudyRepository studyRepository;
+	private final StudyMemberService studyMemberService;
 
 	@Transactional
-	public StudyResponse createStudy(StudyRequest request) {
+	public StudyResponse createStudy(StudyRequest request, Long memberId) {
 		Study study = Study.builder()
 			.name(request.name())
 			.description(request.description())
 			.level(request.level())
 			.type(request.type())
-			.githubOrgName(request.githubOrgName())
-			.githubRepoName(request.githubRepoName())
-			.githubWebhookSecret(request.githubWebhookSecret())
 			.build();
 
 		Study savedStudy = studyRepository.save(study);
+		studyMemberService.registerLeader(savedStudy, memberId);
 		return StudyResponse.from(savedStudy);
 	}
 
@@ -41,8 +40,7 @@ public class StudyService {
 		Study study = studyRepository.findById(studyId)
 			.orElseThrow(() -> new CustomException(ErrorCode.STUDY_NOT_FOUND));
 
-		study.update(request.name(), request.description(), request.level(), request.type(),
-			request.githubOrgName(), request.githubRepoName(), request.githubWebhookSecret());
+		study.update(request.name(), request.description(), request.level(), request.type());
 		return StudyResponse.from(study);
 	}
 

@@ -11,16 +11,18 @@ public record StudyMemberInfo(
 	String name,
 	String githubUsername,
 	StudyMemberRole role,
-	LocalDateTime joinedAt
+	LocalDateTime joinedAt,
+	String profileImageUrl
 ) {
-	public static StudyMemberInfo from(StudyMember sm) {
+	public static StudyMemberInfo from(StudyMember sm, String profileImageUrl) {
 		return new StudyMemberInfo(
 			sm.getMember().getId(),
 			sm.getMember().getNickname(),
 			sm.getMember().getName(),
 			sm.getMember().getGithubUsername(),
 			sm.getRole(),
-			sm.getJoinedAt()
+			sm.getJoinedAt(),
+			profileImageUrl
 		);
 	}
 }

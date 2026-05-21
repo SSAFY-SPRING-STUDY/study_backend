@@ -30,7 +30,7 @@ public class StudyMemberController {
 	private final StudyMemberService studyMemberService;
 
 	@PostMapping
-	@Operation(summary = "스터디 참여", description = "스터디에 참여합니다. GitHub 계정 연동 필수.")
+	@Operation(summary = "스터디 참여", description = "스터디에 참여합니다.")
 	@ResponseStatus(HttpStatus.CREATED)
 	public ApiResponse<Void> join(
 		@PathVariable Long studyId,
@@ -64,7 +64,7 @@ public class StudyMemberController {
 	}
 
 	@DeleteMapping("/me")
-	@Operation(summary = "스터디 탈퇴", description = "스터디에서 탈퇴합니다. 연관된 과제 진행 기록이 함께 삭제됩니다.")
+	@Operation(summary = "스터디 탈퇴", description = "스터디에서 탈퇴합니다.")
 	@ResponseStatus(HttpStatus.OK)
 	public ApiResponse<Void> leave(
 		@PathVariable Long studyId,

@@ -35,20 +35,24 @@ class StudyServiceTest {
 	@Mock
 	private StudyRepository studyRepository;
 
+	@Mock
+	private StudyMemberService studyMemberService;
+
 	@Test
 	@DisplayName("스터디 생성 성공")
 	void 스터디_생성_성공() {
 		// given
-		StudyRequest request = new StudyRequest("스프링 백엔드", "스프링 학습 스터디", DifficultyLevel.BASIC, StudyType.BACKEND, null, null, null);
+		StudyRequest request = new StudyRequest("스프링 백엔드", "스프링 학습 스터디", DifficultyLevel.BASIC, StudyType.BACKEND);
 		Study study = StudyFixture.study(1L);
 		given(studyRepository.save(any(Study.class))).willReturn(study);
 
 		// when
-		StudyResponse result = studyService.createStudy(request);
+		StudyResponse result = studyService.createStudy(request, 1L);
 
 		// then
 		assertThat(result.id()).isEqualTo(1L);
 		assertThat(result.name()).isEqualTo(study.getName());
+		then(studyMemberService).should().registerLeader(any(Study.class), eq(1L));
 	}
 
 	@Test
@@ -56,7 +60,7 @@ class StudyServiceTest {
 	void 스터디_수정_성공() {
 		// given
 		Study study = StudyFixture.study(1L);
-		StudyRequest request = new StudyRequest("수정된 이름", "수정된 설명", DifficultyLevel.INTERMEDIATE, StudyType.ALGORITHM, null, null, null);
+		StudyRequest request = new StudyRequest("수정된 이름", "수정된 설명", DifficultyLevel.INTERMEDIATE, StudyType.ALGORITHM);
 		given(studyRepository.findById(1L)).willReturn(Optional.of(study));
 
 		// when
@@ -73,7 +77,7 @@ class StudyServiceTest {
 	@DisplayName("스터디 수정 실패 - 존재하지 않는 스터디")
 	void 스터디_수정_실패_존재하지_않는_스터디() {
 		// given
-		StudyRequest request = new StudyRequest("수정된 이름", "수정된 설명", DifficultyLevel.BASIC, StudyType.BACKEND, null, null, null);
+		StudyRequest request = new StudyRequest("수정된 이름", "수정된 설명", DifficultyLevel.BASIC, StudyType.BACKEND);
 		given(studyRepository.findById(999L)).willReturn(Optional.empty());
 
 		// when & then

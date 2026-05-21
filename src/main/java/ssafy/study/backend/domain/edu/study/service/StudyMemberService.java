@@ -1,18 +1,24 @@
 package ssafy.study.backend.domain.edu.study.service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import ssafy.study.backend.domain.edu.study.controller.dto.response.StudyMemberListResponse;
+import ssafy.study.backend.global.aws.s3.S3Service;
 import ssafy.study.backend.domain.edu.study.entity.Study;
 import ssafy.study.backend.domain.edu.study.entity.StudyMember;
 import ssafy.study.backend.domain.edu.study.entity.StudyMemberRole;
 import ssafy.study.backend.domain.edu.study.repository.StudyMemberRepository;
 import ssafy.study.backend.domain.edu.study.repository.StudyRepository;
 import ssafy.study.backend.domain.member.entity.Member;
+import ssafy.study.backend.domain.member.entity.MemberRole;
+import ssafy.study.backend.domain.member.repository.MemberProfileRepository;
 import ssafy.study.backend.domain.member.repository.MemberRepository;
 import ssafy.study.backend.global.exception.CustomException;
 import ssafy.study.backend.global.exception.error.ErrorCode;
@@ -25,16 +31,14 @@ public class StudyMemberService {
 	private final StudyRepository studyRepository;
 	private final MemberRepository memberRepository;
 	private final StudyMemberRepository studyMemberRepository;
+	private final MemberProfileRepository memberProfileRepository;
+	private final S3Service s3Service;
 
-	/** 스터디 참여 (GitHub 계정 연동 필수) */
+	/** 스터디 참여 */
 	@Transactional
 	public void join(Long studyId, Long memberId) {
 		Study study = findStudy(studyId);
 		Member member = findMember(memberId);
-
-		if (!member.isGithubLinked()) {
-			throw new CustomException(ErrorCode.GITHUB_ACCOUNT_NOT_LINKED);
-		}
 
 		if (studyMemberRepository.existsByStudyIdAndMemberId(studyId, memberId)) {
 			throw new CustomException(ErrorCode.STUDY_MEMBER_ALREADY_EXISTS);
@@ -52,7 +56,16 @@ public class StudyMemberService {
 	public StudyMemberListResponse getMembers(Long studyId) {
 		findStudy(studyId);
 		List<StudyMember> members = studyMemberRepository.findByStudyId(studyId);
-		return StudyMemberListResponse.from(members);
+
+		List<Long> memberIds = members.stream().map(sm -> sm.getMember().getId()).toList();
+		Map<Long, String> profileImageUrls = memberProfileRepository.findAllByMemberIdIn(memberIds).stream()
+			.filter(p -> p.getProfileImageKey() != null)
+			.collect(Collectors.toMap(
+				p -> p.getMember().getId(),
+				p -> s3Service.getDownloadPresignedUrl(p.getProfileImageKey())
+			));
+
+		return StudyMemberListResponse.from(members, profileImageUrls);
 	}
 
 	/** 역할 변경 (LEADER 또는 ADMIN만 가능) */
@@ -86,6 +99,35 @@ public class StudyMemberService {
 
 	// ===== helpers =====
 
+	/** 스터디 생성 시 생성자를 LEADER로 등록 */
+	@Transactional
+	public void registerLeader(Study study, Long memberId) {
+		Member member = findMember(memberId);
+		StudyMember studyMember = StudyMember.builder()
+			.study(study)
+			.member(member)
+			.role(StudyMemberRole.LEADER)
+			.build();
+		studyMemberRepository.save(studyMember);
+	}
+
+	/** 인증 여부·스터디 멤버 여부 무관하게 Optional 반환 (조회 공개 허용용) */
+	public Optional<StudyMember> findStudyMemberOptional(Long studyId, Long memberId) {
+		if (memberId == null) {
+			return Optional.empty();
+		}
+		return studyMemberRepository.findByStudyIdAndMemberId(studyId, memberId);
+	}
+
+	/** ADMIN이면 Optional 반환(우회), 일반 유저는 없을 시 404 */
+	public Optional<StudyMember> findStudyMemberIfNotAdmin(Long studyId, Long memberId) {
+		Member member = findMember(memberId);
+		if (member.getRole() == MemberRole.ROLE_ADMIN) {
+			return studyMemberRepository.findByStudyIdAndMemberId(studyId, memberId);
+		}
+		return Optional.of(getStudyMemberOrThrow(studyId, memberId));
+	}
+
 	public StudyMember getStudyMemberOrThrow(Long studyId, Long memberId) {
 		return studyMemberRepository.findByStudyIdAndMemberId(studyId, memberId)
 			.orElseThrow(() -> new CustomException(ErrorCode.STUDY_MEMBER_NOT_FOUND));
@@ -93,7 +135,7 @@ public class StudyMemberService {
 
 	public void validateLeaderOrAdmin(Long studyId, Long memberId) {
 		Member member = findMember(memberId);
-		if (member.getRole() == ssafy.study.backend.domain.member.entity.MemberRole.ROLE_ADMIN) {
+		if (member.getRole() == MemberRole.ROLE_ADMIN) {
 			return;
 		}
 		if (!studyMemberRepository.existsByStudyIdAndMemberIdAndRole(studyId, memberId, StudyMemberRole.LEADER)) {

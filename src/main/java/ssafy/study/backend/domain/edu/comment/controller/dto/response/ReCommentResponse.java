@@ -9,6 +9,7 @@ public record ReCommentResponse(
 	String content,
 	Long authorId,
 	String authorName,
+	String authorNickname,
 	Long parentCommentId,
 	LocalDateTime createdAt,
 	LocalDateTime updatedAt
@@ -19,6 +20,7 @@ public record ReCommentResponse(
 			reComment.getContent(),
 			reComment.getAuthor().getId(),
 			reComment.getAuthor().getName(),
+			reComment.getAuthor().getNickname(),
 			reComment.getComment().getId(),
 			reComment.getCreatedAt(),
 			reComment.getUpdatedAt()

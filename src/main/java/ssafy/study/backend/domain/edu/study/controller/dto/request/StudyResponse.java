@@ -7,9 +7,7 @@ public record StudyResponse(
 	String name,
 	String description,
 	String level,
-	String type,
-	String githubOrgName,
-	String githubRepoName
+	String type
 ) {
 	public static StudyResponse from(Study savedStudy) {
 		return new StudyResponse(
@@ -17,9 +15,7 @@ public record StudyResponse(
 			savedStudy.getName(),
 			savedStudy.getDescription(),
 			savedStudy.getLevel().name(),
-			savedStudy.getType().name(),
-			savedStudy.getGithubOrgName(),
-			savedStudy.getGithubRepoName()
+			savedStudy.getType().name()
 		);
 	}
 }
