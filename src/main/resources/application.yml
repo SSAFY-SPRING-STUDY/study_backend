@@ -72,3 +72,19 @@ app:
 springdoc:
   swagger-ui:
     disable-swagger-default-url=true
+
+# Actuator: health 만 외부 노출 + mail health 비활성화.
+# MailHealthIndicator 가 매 health 체크마다 SMTP 핑을 시도하여 톰캣 thread 를
+# 잡아먹고 (75 초 timeout 사례 관측), Hikari thread starvation 까지 유발했었다.
+# 실제 메일 발송 동작과 무관하게 health 핑만 끈다.
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+  health:
+    mail:
+      enabled: false
