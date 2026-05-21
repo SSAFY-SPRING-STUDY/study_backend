@@ -44,20 +44,6 @@ public class GitHubOAuthClient {
 			.body(GitHubTokenResponse.class);
 	}
 
-	/** 연결용 OAuth App 자격증명으로 code → access_token 교환 */
-	public GitHubTokenResponse exchangeConnectCode(String code) {
-		return oauthClient.post()
-			.uri("/login/oauth/access_token")
-			.body(Map.of(
-				"client_id", props.connectClientId(),
-				"client_secret", props.connectClientSecret(),
-				"code", code,
-				"redirect_uri", props.connectRedirectUri()
-			))
-			.retrieve()
-			.body(GitHubTokenResponse.class);
-	}
-
 	/** GitHub access_token으로 /user API 호출 → 사용자 정보 반환 */
 	public GitHubUserResponse getUser(String accessToken) {
 		return apiClient.get()

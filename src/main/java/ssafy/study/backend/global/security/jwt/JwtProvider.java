@@ -66,41 +66,6 @@ public class JwtProvider {
 	}
 
     /* =======================
-       State Token (GitHub OAuth 연결용, 5분 만료)
-       ======================= */
-
-	private static final long STATE_EXPIRATION_MS = 5 * 60 * 1000L;
-
-	public String generateStateToken(Long memberId) {
-		Instant now = Instant.now();
-		return Jwts.builder()
-			.subject(memberId.toString())
-			.claim("type", "state")
-			.issuedAt(Date.from(now))
-			.expiration(Date.from(now.plusMillis(STATE_EXPIRATION_MS)))
-			.signWith(getKey(jwtProperties.access().secret()))
-			.compact();
-	}
-
-	public Long validateStateToken(String token) {
-		try {
-			Claims claims = Jwts.parser()
-				.verifyWith(getKey(jwtProperties.access().secret()))
-				.build()
-				.parseSignedClaims(token)
-				.getPayload();
-			if (!"state".equals(claims.get("type", String.class))) {
-				throw new CustomException(ErrorCode.INVALID_TOKEN);
-			}
-			return Long.valueOf(claims.getSubject());
-		} catch (ExpiredJwtException e) {
-			throw new CustomException(ErrorCode.TOKEN_EXPIRED);
-		} catch (JwtException | IllegalArgumentException e) {
-			throw new CustomException(ErrorCode.INVALID_TOKEN);
-		}
-	}
-
-    /* =======================
        Internal Logic
        ======================= */
 

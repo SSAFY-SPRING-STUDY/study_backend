@@ -62,47 +62,6 @@ public class GitHubOAuthService {
 		return new AuthResult(MemberInfo.fromEntity(member), accessToken, refreshToken);
 	}
 
-	/** GitHub 계정 연결 시작 — state JWT 서명 후 redirect URL 반환 (JWT 인증 필요) */
-	public String getConnectRedirectUrl(Long memberId) {
-		String state = jwtProvider.generateStateToken(memberId);
-		return "https://github.com/login/oauth/authorize"
-			+ "?client_id=" + gitHubProperties.connectClientId()
-			+ "&redirect_uri=" + gitHubProperties.connectRedirectUri()
-			+ "&state=" + state
-			+ "&scope=read:user,user:email";
-	}
-
-	/** GitHub 계정 연결 콜백 처리 → 프론트 redirect URL 반환 */
-	@Transactional
-	public String handleConnectCallback(String code, String state) {
-		Long memberId;
-		try {
-			memberId = jwtProvider.validateStateToken(state);
-		} catch (CustomException e) {
-			return gitHubProperties.frontRedirectUri() + "?status=error";
-		}
-
-		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-
-		GitHubTokenResponse tokenResponse;
-		GitHubUserResponse userInfo;
-		try {
-			tokenResponse = gitHubOAuthClient.exchangeConnectCode(code);
-			userInfo = gitHubOAuthClient.getUser(tokenResponse.accessToken());
-		} catch (Exception e) {
-			return gitHubProperties.frontRedirectUri() + "?status=error";
-		}
-
-		if (memberRepository.existsByGithubId(userInfo.id())) {
-			return gitHubProperties.frontRedirectUri() + "?status=already_linked";
-		}
-
-		member.connectGithub(userInfo.id(), userInfo.login());
-
-		return gitHubProperties.frontRedirectUri() + "?status=connected";
-	}
-
 	// ===== private =====
 
 	private Member resolveByEmailOrCreate(GitHubUserResponse userInfo) {
