@@ -32,13 +32,23 @@ public class GitHubOAuthClient {
 
 	/** 로그인용 OAuth App 자격증명으로 code → access_token 교환 */
 	public GitHubTokenResponse exchangeLoginCode(String code) {
+		return exchangeCode(code, props.redirectUri());
+	}
+
+	/** 계정 연결용 redirect_uri 로 code → access_token 교환.
+	 *  GitHub 은 발급 시 redirect_uri 와 교환 시 redirect_uri 가 정확히 일치해야 한다. */
+	public GitHubTokenResponse exchangeConnectCode(String code) {
+		return exchangeCode(code, props.connectRedirectUri());
+	}
+
+	private GitHubTokenResponse exchangeCode(String code, String redirectUri) {
 		return oauthClient.post()
 			.uri("/login/oauth/access_token")
 			.body(Map.of(
 				"client_id", props.clientId(),
 				"client_secret", props.clientSecret(),
 				"code", code,
-				"redirect_uri", props.redirectUri()
+				"redirect_uri", redirectUri
 			))
 			.retrieve()
 			.body(GitHubTokenResponse.class);

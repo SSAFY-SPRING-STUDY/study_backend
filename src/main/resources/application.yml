@@ -39,6 +39,7 @@ github:
   client-id: ${GITHUB_CLIENT_ID}
   client-secret: ${GITHUB_CLIENT_SECRET}
   redirect-uri: ${GITHUB_REDIRECT_URI}                        # /api/v1/auth/github/callback
+  connect-redirect-uri: ${GITHUB_CONNECT_REDIRECT_URI}        # /api/v1/members/me/github/connect/callback
 
 custom:
   jwt:

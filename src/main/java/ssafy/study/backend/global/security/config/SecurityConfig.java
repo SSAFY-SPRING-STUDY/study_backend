@@ -76,6 +76,10 @@ public class SecurityConfig {
 					.requestMatchers(HttpMethod.POST, "/api/v1/auth/password-reset/request").permitAll()
 					.requestMatchers(HttpMethod.POST, "/api/v1/auth/password-reset/confirm").permitAll()
 
+					// GitHub 계정 연결 콜백 — GitHub 이 우리 쿠키를 들고 오지 않으므로 JWT 인증 불가.
+					// 대신 Redis 의 state 토큰으로 어느 회원에 묶을지 식별 + CSRF 방어.
+					.requestMatchers(HttpMethod.GET, "/api/v1/members/me/github/connect/callback").permitAll()
+
 					// STUDY Domain - 비회원 조회 허용
 					.requestMatchers(HttpMethod.GET, "/api/v1/studies").permitAll()
 					.requestMatchers(HttpMethod.GET, "/api/v1/studies/{studyId}").permitAll()

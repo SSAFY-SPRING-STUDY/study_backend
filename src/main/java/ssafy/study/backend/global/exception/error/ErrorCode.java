@@ -75,6 +75,8 @@ public enum ErrorCode {
 	// GitHub OAuth Errors
 	GITHUB_OAUTH_FAILED(HttpStatus.BAD_GATEWAY, "GitHub OAuth 처리에 실패했습니다."),
 	GITHUB_ONLY_ACCOUNT(HttpStatus.BAD_REQUEST, "GitHub으로만 로그인 가능한 계정입니다. GitHub 로그인을 이용해주세요."),
+	GITHUB_CONNECT_STATE_INVALID(HttpStatus.BAD_REQUEST, "GitHub 연결 요청이 만료되었거나 유효하지 않습니다. 다시 시도해주세요."),
+	GITHUB_ALREADY_LINKED_TO_OTHER_MEMBER(HttpStatus.CONFLICT, "해당 GitHub 계정은 이미 다른 회원에 연결되어 있습니다."),
 
 	// Study Member Errors (leave)
 	LAST_LEADER_CANNOT_LEAVE(HttpStatus.BAD_REQUEST, "스터디의 유일한 리더는 탈퇴할 수 없습니다. 다른 멤버에게 리더를 위임한 후 탈퇴해주세요.");

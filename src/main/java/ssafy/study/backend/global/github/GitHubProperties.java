@@ -6,6 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record GitHubProperties(
 	String clientId,
 	String clientSecret,
-	String redirectUri
+	String redirectUri,
+	String connectRedirectUri
 ) {
 }
